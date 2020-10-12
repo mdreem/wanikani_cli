@@ -3,13 +3,23 @@ package main
 import (
 	"fmt"
 	"github.com/spf13/viper"
+	"net/http"
 )
+
+type Client struct {
+	baseUrl string
+	apiKey  string
+	client  *http.Client
+}
 
 func main() {
 	initializeConfiguration()
 
-	apiKey := GetApiKey()
-	fmt.Printf("key: %s", apiKey)
+	client := CreateClient()
+	userInformation := client.FetchUserInformation()
+
+	fmt.Printf("userInformation: %v\n", userInformation)
+	fmt.Printf("level: %v\n", userInformation.Level)
 }
 
 func initializeConfiguration() {
@@ -30,4 +40,9 @@ func GetApiKey() string {
 	}
 	apiKey := apiConfig["api_key"]
 	return apiKey
+}
+
+func CreateClient() Client {
+	apiKey := GetApiKey()
+	return Client{baseUrl: "https://api.wanikani.com/v2/", apiKey: apiKey, client: &http.Client{}}
 }
