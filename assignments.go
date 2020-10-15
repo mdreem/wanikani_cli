@@ -35,11 +35,17 @@ type AssignmentEnvelope struct {
 	Data           Assignment  `json:"data"`
 }
 
-func (o Client) FetchAssignments() []AssignmentEnvelope {
+func (o Client) FetchAssignments(levels []string, subjectTypes []string) []AssignmentEnvelope {
 	assignmentsEnvelope := AssignmentsEnvelope{}
 
 	parameters := make(map[string]string)
-	parameters["levels"] = joinArrayToParameter([]string{"28"})
+
+	if levels != nil {
+		parameters["levels"] = joinArrayToParameter(levels)
+	}
+	if subjectTypes != nil {
+		parameters["subject_types"] = joinArrayToParameter(subjectTypes)
+	}
 
 	err := o.FetchWanikaniData("assignments", &assignmentsEnvelope, parameters)
 	if err != nil {
