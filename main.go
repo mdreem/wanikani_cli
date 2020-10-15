@@ -4,13 +4,8 @@ import (
 	"fmt"
 	"github.com/spf13/viper"
 	"net/http"
+	"wanikani_cli/data"
 )
-
-type Client struct {
-	baseUrl string
-	apiKey  string
-	client  *http.Client
-}
 
 func main() {
 	initializeConfiguration()
@@ -66,7 +61,7 @@ func GetApiKey() string {
 	return apiKey
 }
 
-func CreateClient() Client {
+func CreateClient() data.Client {
 	apiKey := GetApiKey()
-	return Client{baseUrl: "https://api.wanikani.com/v2/", apiKey: apiKey, client: &http.Client{}}
+	return data.Client{BaseUrl: "https://api.wanikani.com/v2/", ApiKey: apiKey, Client: &http.Client{}}
 }

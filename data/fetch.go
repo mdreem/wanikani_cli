@@ -1,4 +1,4 @@
-package main
+package data
 
 import (
 	"encoding/json"
@@ -9,6 +9,18 @@ import (
 	"strings"
 )
 
+type Client struct {
+	BaseUrl string
+	ApiKey  string
+	Client  *http.Client
+}
+
+type Pages struct {
+	PerPage     json.Number `json:"per_page"`
+	NextUrl     string      `json:"next_url"`
+	PreviousUrl string      `json:"previous_url"`
+}
+
 func (o Client) FetchWanikaniData(endpoint string, data interface{}, parameters map[string]string) error {
 	request, err := o.createRequest(endpoint, parameters)
 	if err != nil {
@@ -16,7 +28,7 @@ func (o Client) FetchWanikaniData(endpoint string, data interface{}, parameters 
 		return err
 	}
 
-	response, err := o.client.Do(request)
+	response, err := o.Client.Do(request)
 	if err != nil {
 		fmt.Printf("an error occured when executing the request: %v\n", err)
 		return err
@@ -37,12 +49,12 @@ func (o Client) FetchWanikaniData(endpoint string, data interface{}, parameters 
 }
 
 func (o Client) createRequest(endpoint string, parameters map[string]string) (*http.Request, error) {
-	request, err := http.NewRequest("GET", o.baseUrl+endpoint, nil)
+	request, err := http.NewRequest("GET", o.BaseUrl+endpoint, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	request.Header.Add("Authorization", "Bearer "+o.apiKey)
+	request.Header.Add("Authorization", "Bearer "+o.ApiKey)
 
 	if parameters != nil {
 		q := request.URL.Query()
