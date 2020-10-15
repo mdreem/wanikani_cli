@@ -41,7 +41,7 @@ type UserEnvelope struct {
 
 func (o Client) FetchUserInformation() User {
 	userEnvelope := UserEnvelope{}
-	err := o.FetchWanikaniData("user", &userEnvelope)
+	err := o.FetchWanikaniData("user", &userEnvelope, nil)
 	if err != nil {
 		panic(fmt.Errorf("error fetching user data: %v", err))
 	}

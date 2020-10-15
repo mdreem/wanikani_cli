@@ -20,6 +20,19 @@ func main() {
 
 	fmt.Printf("userInformation: %v\n", userInformation)
 	fmt.Printf("level: %v\n", userInformation.Level)
+
+	assignments := client.FetchAssignments()
+
+	subjectIds := make([]string, len(assignments))
+	for idx, assignment := range assignments {
+		subjectIds[idx] = assignment.Data.SubjectId.String()
+	}
+
+	subjects := client.FetchSubjects(subjectIds)
+
+	for idx, subject := range subjects {
+		fmt.Printf("%d: (%v) %s \n", idx, subject.Data.Level, subject.Data.Characters)
+	}
 }
 
 func initializeConfiguration() {
