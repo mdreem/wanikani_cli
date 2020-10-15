@@ -16,28 +16,17 @@ func main() {
 	fmt.Printf("userInformation: %v\n", userInformation)
 	fmt.Printf("level: %v\n", userInformation.Level)
 
-	radicalAssignments := client.FetchAssignments([]string{"28"}, []string{"radical"})
-	kanjiAssignments := client.FetchAssignments([]string{"28"}, []string{"kanji"})
+	radicalProgression := fetchRadicalProgression(client, "28")
+	kanjiProgression := fetchKanjiProgression(client, "28")
 
-	radicalSubjectIds := make([]string, len(radicalAssignments))
-	for idx, assignment := range radicalAssignments {
-		radicalSubjectIds[idx] = assignment.Data.SubjectId.String()
+	fmt.Print("Radicals\n")
+	for idx, progression := range radicalProgression {
+		fmt.Printf("%d: %v\n", idx, progression)
 	}
 
-	kanjiSubjectIds := make([]string, len(kanjiAssignments))
-	for idx, assignment := range kanjiAssignments {
-		kanjiSubjectIds[idx] = assignment.Data.SubjectId.String()
-	}
-
-	radicalSubjects := client.FetchSubjects(radicalSubjectIds)
-	kanjiSubjects := client.FetchSubjects(kanjiSubjectIds)
-
-	for idx, subject := range radicalSubjects {
-		fmt.Printf("%d: (%v) %s \n", idx, subject.Data.Level, subject.Data.Characters)
-	}
-
-	for idx, subject := range kanjiSubjects {
-		fmt.Printf("%d: (%v) %s \n", idx, subject.Data.Level, subject.Data.Characters)
+	fmt.Print("Kanji\n")
+	for idx, progression := range kanjiProgression {
+		fmt.Printf("%d: %v\n", idx, progression)
 	}
 }
 
