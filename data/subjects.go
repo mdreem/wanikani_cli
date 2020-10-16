@@ -67,7 +67,7 @@ func (o Client) FetchSubjects(ids []string) []SubjectEnvelope {
 
 	err := o.FetchWanikaniData("subjects", &subjectEnvelope, parameters)
 	if err != nil {
-		panic(fmt.Errorf("error fetching list of assignments: %v", err))
+		panic(fmt.Errorf("error fetching list of subjects: %v", err))
 	}
 
 	return subjectEnvelope.Data
