@@ -7,9 +7,12 @@ import (
 )
 
 type Progression struct {
-	Characters string
-	UnlockedAt time.Time
-	PassedAt   time.Time
+	Characters  string
+	UnlockedAt  time.Time
+	PassedAt    time.Time
+	SrsStage    int64
+	SrsSystem   string
+	AvailableAt time.Time
 }
 
 func fetchRadicalProgression(client data.Client, level string) []Progression {
@@ -22,6 +25,37 @@ func fetchKanjiProgression(client data.Client, level string) []Progression {
 
 func fetchProgression(client data.Client, level string, subjectType string) []Progression {
 	assignments := client.FetchAssignments([]string{level}, []string{subjectType})
+	subjects := getSubjects(client, assignments)
+
+	progressionList := make([]Progression, 0)
+	for _, assignment := range assignments {
+		relatedSubjectId := assignment.Data.SubjectId.String()
+		relatedSubject := subjects[relatedSubjectId]
+
+		passedAt := parseTime(assignment.Data.PassedAt)
+		unlockedAt := parseTime(assignment.Data.UnlockedAt)
+		availanbleAt := parseTime(assignment.Data.AvailableAt)
+
+		srsStage, err := assignment.Data.SrsStage.Int64()
+		if err != nil {
+			panic(fmt.Errorf("could not parse value %v: %v", assignment.Data.SrsStage, err))
+		}
+
+		progression := Progression{
+			Characters:  relatedSubject.Characters,
+			UnlockedAt:  unlockedAt,
+			AvailableAt: availanbleAt,
+			PassedAt:    passedAt,
+			SrsStage:    srsStage,
+			SrsSystem:   relatedSubject.SpacedRepetitionSystemId.String(),
+		}
+		progressionList = append(progressionList, progression)
+	}
+
+	return progressionList
+}
+
+func getSubjects(client data.Client, assignments []data.AssignmentEnvelope) map[string]data.Subject {
 	subjectIds := make([]string, len(assignments))
 
 	for idx, assignment := range assignments {
@@ -34,25 +68,7 @@ func fetchProgression(client data.Client, level string, subjectType string) []Pr
 	for _, subject := range subjectList {
 		subjects[subject.Id.String()] = subject.Data
 	}
-
-	progressionList := make([]Progression, 0)
-
-	for _, assignment := range assignments {
-		relatedSubjectId := assignment.Data.SubjectId.String()
-		relatedSubject := subjects[relatedSubjectId]
-
-		passedAt := parseTime(assignment.Data.PassedAt)
-		unlockedAt := parseTime(assignment.Data.UnlockedAt)
-
-		progression := Progression{
-			Characters: relatedSubject.Characters,
-			UnlockedAt: unlockedAt,
-			PassedAt:   passedAt,
-		}
-		progressionList = append(progressionList, progression)
-	}
-
-	return progressionList
+	return subjects
 }
 
 func parseTime(timeString string) time.Time {
@@ -81,5 +97,12 @@ func (o Progression) String() string {
 		passedAt = o.PassedAt.String()
 	}
 
-	return fmt.Sprintf("%s: Unlocked: %s - Passed: %s", o.Characters, unlockedAt, passedAt)
+	availableAt := 0
+	if (o.AvailableAt == time.Time{}) {
+		passedAt = "Not available yet"
+	} else {
+		passedAt = o.AvailableAt.String()
+	}
+
+	return fmt.Sprintf("%s: Unlocked: %s - Passed: %s - Available: %d [%d]", o.Characters, unlockedAt, passedAt, availableAt, o.SrsStage)
 }
