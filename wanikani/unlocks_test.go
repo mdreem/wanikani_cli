@@ -111,6 +111,9 @@ func TestComputeOptimalUnlocks(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			timeNow = func() time.Time {
+				return getTime("01-01-2020 00:00")
+			}
 			if got := computeOptimalUnlocks(tt.args.system, tt.args.progression); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("computeOptimalUnlocks() = %v, want %v", got, tt.want)
 			}

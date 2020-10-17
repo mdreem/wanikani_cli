@@ -10,6 +10,10 @@ import (
 	"wanikani_cli/data"
 )
 
+var (
+	timeNow = time.Now
+)
+
 type Unlocks struct {
 	UnlockTimes []time.Time
 	Unlocked    bool
@@ -18,7 +22,7 @@ type Unlocks struct {
 func (unlocks Unlocks) String() string {
 	times := make([]string, len(unlocks.UnlockTimes))
 
-	location := time.Now().Location()
+	location := timeNow().Location()
 	for idx, element := range unlocks.UnlockTimes {
 		if (element == time.Time{}) {
 			times[idx] = fmt.Sprintf("%s: P", getStageName(idx))
@@ -50,7 +54,7 @@ func computeOptimalUnlocks(system data.SpacedRepetitionSystem, progression Progr
 		if int64(idx) < progression.SrsStage+1 {
 			optimalUnlocks[idx] = time.Time{}
 		} else if int64(idx) == progression.SrsStage+1 {
-			now := time.Now()
+			now := timeNow()
 			if progression.AvailableAt.Before(now) {
 				optimalUnlocks[idx] = now.Truncate(time.Hour).UTC()
 			} else {
