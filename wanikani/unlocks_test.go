@@ -111,8 +111,8 @@ func TestComputeOptimalUnlocks(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := ComputeOptimalUnlocks(tt.args.system, tt.args.progression); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("ComputeOptimalUnlocks() = %v, want %v", got, tt.want)
+			if got := computeOptimalUnlocks(tt.args.system, tt.args.progression); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("computeOptimalUnlocks() = %v, want %v", got, tt.want)
 			}
 		})
 	}

@@ -13,14 +13,19 @@ type Progression struct {
 	SrsStage    int64
 	SrsSystem   string
 	AvailableAt time.Time
+	UnlockTimes Unlocks
 }
 
-func FetchRadicalProgression(client data.Client, level string) []Progression {
-	return fetchProgression(client, level, "radical")
+type Progressions struct {
+	RadicalProgression []Progression
+	KanjiProgression   []Progression
 }
 
-func FetchKanjiProgression(client data.Client, level string) []Progression {
-	return fetchProgression(client, level, "kanji")
+func FetchProgressions(client data.Client, level string) Progressions {
+	return Progressions{
+		RadicalProgression: fetchProgression(client, level, "radical"),
+		KanjiProgression:   fetchProgression(client, level, "kanji"),
+	}
 }
 
 func fetchProgression(client data.Client, level string, subjectType string) []Progression {
@@ -34,7 +39,7 @@ func fetchProgression(client data.Client, level string, subjectType string) []Pr
 
 		passedAt := parseTime(assignment.Data.PassedAt)
 		unlockedAt := parseTime(assignment.Data.UnlockedAt)
-		availanbleAt := parseTime(assignment.Data.AvailableAt)
+		availableAt := parseTime(assignment.Data.AvailableAt)
 
 		srsStage, err := assignment.Data.SrsStage.Int64()
 		if err != nil {
@@ -44,7 +49,7 @@ func fetchProgression(client data.Client, level string, subjectType string) []Pr
 		progression := Progression{
 			Characters:  relatedSubject.Characters,
 			UnlockedAt:  unlockedAt,
-			AvailableAt: availanbleAt,
+			AvailableAt: availableAt,
 			PassedAt:    passedAt,
 			SrsStage:    srsStage,
 			SrsSystem:   relatedSubject.SpacedRepetitionSystemId.String(),

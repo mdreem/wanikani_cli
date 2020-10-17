@@ -17,26 +17,28 @@ func main() {
 	fmt.Printf("userInformation: %v\n", userInformation)
 	fmt.Printf("level: %v\n", userInformation.Level)
 
-	radicalProgression := wanikani.FetchRadicalProgression(client, "28")
-	kanjiProgression := wanikani.FetchKanjiProgression(client, "28")
+	progressions := wanikani.FetchProgressions(client, "28")
 
 	spacedRepetitionSystems := client.FetchSpacedRepetitionSystems()
 	spacedRepetitionSystemMap := data.CreateSpacedRepetitionSystemMap(spacedRepetitionSystems)
 
+	wanikani.UpdateOptimalUnlockTimes(spacedRepetitionSystemMap, &progressions)
+
 	fmt.Print("Radicals\n")
-	for idx, progression := range radicalProgression {
+	for idx, progression := range progressions.RadicalProgression {
 		fmt.Printf("%d: %v\n", idx, progression)
 	}
 
 	fmt.Print("Kanji\n")
-	for idx, progression := range kanjiProgression {
-		system := spacedRepetitionSystemMap[progression.SrsSystem]
-
-		optimalUnlocks := wanikani.ComputeOptimalUnlocks(system, progression)
+	for idx, progression := range progressions.KanjiProgression {
+		optimalUnlocks := progression.UnlockTimes
 
 		fmt.Printf("%d: %v\n", idx, progression)
 		fmt.Printf("\t%v\n", optimalUnlocks.UnlockTimes)
 	}
+
+	earliestProgression := wanikani.FindTimeOfPassingRatio(progressions)
+	fmt.Printf("Earliest progression time: %v", earliestProgression)
 }
 
 func initializeConfiguration() {

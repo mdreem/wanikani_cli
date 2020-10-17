@@ -3,6 +3,8 @@ package wanikani
 import (
 	"encoding/json"
 	"fmt"
+	"math"
+	"sort"
 	"strings"
 	"time"
 	"wanikani_cli/data"
@@ -34,7 +36,7 @@ func (unlocks Unlocks) String() string {
 	}
 }
 
-func ComputeOptimalUnlocks(system data.SpacedRepetitionSystem, progression Progression) Unlocks {
+func computeOptimalUnlocks(system data.SpacedRepetitionSystem, progression Progression) Unlocks {
 	optimalUnlocks := make([]time.Time, len(system.Stages))
 
 	if (progression.AvailableAt == time.Time{}) {
@@ -65,6 +67,33 @@ func ComputeOptimalUnlocks(system data.SpacedRepetitionSystem, progression Progr
 		UnlockTimes: optimalUnlocks,
 		Unlocked:    true,
 	}
+}
+
+func UpdateOptimalUnlockTimes(spacedRepetitionSystems map[string]data.SpacedRepetitionSystem, progressions *Progressions) {
+	updateUnlockTimes(spacedRepetitionSystems, &(progressions.RadicalProgression))
+	updateUnlockTimes(spacedRepetitionSystems, &(progressions.KanjiProgression))
+}
+
+func updateUnlockTimes(spacedRepetitionSystems map[string]data.SpacedRepetitionSystem, progressions *[]Progression) {
+	for idx, progression := range *progressions {
+		system := spacedRepetitionSystems[progression.SrsSystem]
+
+		optimalUnlocks := computeOptimalUnlocks(system, progression)
+		(*progressions)[idx].UnlockTimes = optimalUnlocks
+	}
+}
+
+func FindTimeOfPassingRatio(progressions Progressions) time.Time {
+	kanjiProgression := progressions.KanjiProgression
+
+	sort.Slice(kanjiProgression, func(i, j int) bool {
+		firstUnlockTime := kanjiProgression[i].UnlockTimes.UnlockTimes[5]
+		secondUnlockTime := kanjiProgression[j].UnlockTimes.UnlockTimes[5]
+		return firstUnlockTime.Before(secondUnlockTime)
+	})
+
+	ninetyPercentPoint := int(math.Ceil(0.9 * float64(len(kanjiProgression))))
+	return kanjiProgression[ninetyPercentPoint].UnlockTimes.UnlockTimes[5]
 }
 
 func intervalUnitFactor(intervalUnit string) time.Duration {
