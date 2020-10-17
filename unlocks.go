@@ -34,11 +34,30 @@ func computeOptimalUnlocks(system data.SpacedRepetitionSystem, progression Progr
 		} else if int64(idx) > progression.SrsStage+1 {
 			lastUnlock := optimalUnlocks[idx-1]
 			intervalDuration := time.Duration(toIntOrPanic(stage.Interval))
-			nextUnlock := lastUnlock.Add(intervalDuration * time.Second)
+			nextUnlock := lastUnlock.Add(intervalDuration * intervalUnitFactor(stage.IntervalUnit))
 			optimalUnlocks[idx] = nextUnlock
 		}
 	}
 	return optimalUnlocks
+}
+
+func intervalUnitFactor(intervalUnit string) time.Duration {
+	switch intervalUnit {
+	case "milliseconds":
+		return time.Millisecond
+	case "seconds":
+		return time.Second
+	case "minutes":
+		return time.Minute
+	case "hours":
+		return time.Hour
+	case "days":
+		return 24 * time.Hour
+	case "weeks":
+		return 7 * 24 * time.Hour
+	default:
+		panic(fmt.Errorf("unknown interval unit %s", intervalUnit))
+	}
 }
 
 func toIntOrPanic(value json.Number) int64 {
