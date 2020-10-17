@@ -1,12 +1,9 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/spf13/viper"
 	"net/http"
-	"strings"
-	"time"
 	"wanikani_cli/data"
 )
 
@@ -37,51 +34,8 @@ func main() {
 		optimalUnlocks := computeOptimalUnlocks(system, progression)
 
 		fmt.Printf("%d: %v\n", idx, progression)
-		fmt.Printf("\t%v", optimalUnlocks)
+		fmt.Printf("\t%v\n", optimalUnlocks)
 	}
-}
-
-type Unlocks []time.Time
-
-func (unlocks Unlocks) String() string {
-	times := make([]string, len(unlocks))
-
-	for idx, element := range unlocks {
-		if (element == time.Time{}) {
-			times[idx] = fmt.Sprintf("%d: P", idx)
-		} else {
-			res := element.Format("02-01-2006 15:04")
-			times[idx] = fmt.Sprintf("%d: %s", idx, res)
-		}
-	}
-	return strings.Join(times, " ")
-}
-
-func computeOptimalUnlocks(system data.SpacedRepetitionSystem, progression Progression) Unlocks {
-	optimalUnlocks := make([]time.Time, len(system.Stages))
-	for idx, stage := range system.Stages {
-		if int64(idx) < progression.SrsStage {
-			optimalUnlocks[idx] = time.Time{}
-		}
-		if int64(idx) == progression.SrsStage {
-			optimalUnlocks[idx] = progression.AvailableAt
-		}
-		if int64(idx) > progression.SrsStage {
-			lastUnlock := optimalUnlocks[idx-1]
-			intervalDuration := time.Duration(toIntOrPanic(stage.Interval))
-			nextUnlock := lastUnlock.Add(intervalDuration * time.Second)
-			optimalUnlocks[idx] = nextUnlock
-		}
-	}
-	return optimalUnlocks
-}
-
-func toIntOrPanic(value json.Number) int64 {
-	intValue, err := value.Int64()
-	if err != nil {
-		panic(fmt.Errorf("could not convert '%v' to int: %v", value, err))
-	}
-	return intValue
 }
 
 func initializeConfiguration() {
@@ -107,4 +61,31 @@ func GetApiKey() string {
 func CreateClient() data.Client {
 	apiKey := GetApiKey()
 	return data.Client{BaseUrl: "https://api.wanikani.com/v2/", ApiKey: apiKey, Client: &http.Client{}}
+}
+
+func getStageName(stage int) string {
+	switch stage {
+	case 0:
+		return "Not started"
+	case 1:
+		return "Apprentice 1"
+	case 2:
+		return "Apprentice 2"
+	case 3:
+		return "Apprentice 3"
+	case 4:
+		return "Apprentice 4"
+	case 5:
+		return "Guru 1"
+	case 6:
+		return "Guru 2"
+	case 7:
+		return "Master"
+	case 8:
+		return "Enlightened"
+	case 9:
+		return "Burned"
+	default:
+		return "Unknown"
+	}
 }
