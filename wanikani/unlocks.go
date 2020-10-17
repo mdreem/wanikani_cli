@@ -8,13 +8,16 @@ import (
 	"wanikani_cli/data"
 )
 
-type Unlocks []time.Time
+type Unlocks struct {
+	UnlockTimes []time.Time
+	Unlocked    bool
+}
 
 func (unlocks Unlocks) String() string {
-	times := make([]string, len(unlocks))
+	times := make([]string, len(unlocks.UnlockTimes))
 
 	location := time.Now().Location()
-	for idx, element := range unlocks {
+	for idx, element := range unlocks.UnlockTimes {
 		if (element == time.Time{}) {
 			times[idx] = fmt.Sprintf("%s: P", getStageName(idx))
 		} else {
@@ -22,11 +25,25 @@ func (unlocks Unlocks) String() string {
 			times[idx] = fmt.Sprintf("%s: %s", getStageName(idx), res)
 		}
 	}
-	return strings.Join(times, ", ")
+	joinedTimes := strings.Join(times, ", ")
+
+	if unlocks.Unlocked {
+		return joinedTimes
+	} else {
+		return "not unlocked"
+	}
 }
 
 func ComputeOptimalUnlocks(system data.SpacedRepetitionSystem, progression Progression) Unlocks {
 	optimalUnlocks := make([]time.Time, len(system.Stages))
+
+	if (progression.AvailableAt == time.Time{}) {
+		return Unlocks{
+			UnlockTimes: optimalUnlocks,
+			Unlocked:    false,
+		}
+	}
+
 	for idx, stage := range system.Stages {
 		if int64(idx) < progression.SrsStage+1 {
 			optimalUnlocks[idx] = time.Time{}
@@ -35,11 +52,19 @@ func ComputeOptimalUnlocks(system data.SpacedRepetitionSystem, progression Progr
 		} else if int64(idx) > progression.SrsStage+1 {
 			lastUnlock := optimalUnlocks[idx-1]
 			intervalDuration := time.Duration(toIntOrPanic(stage.Interval))
-			nextUnlock := lastUnlock.Add(intervalDuration * intervalUnitFactor(stage.IntervalUnit))
+			var nextUnlock time.Time
+			if intervalDuration < 0 {
+				nextUnlock = time.Time{}
+			} else {
+				nextUnlock = lastUnlock.Add(intervalDuration * intervalUnitFactor(stage.IntervalUnit))
+			}
 			optimalUnlocks[idx] = nextUnlock
 		}
 	}
-	return optimalUnlocks
+	return Unlocks{
+		UnlockTimes: optimalUnlocks,
+		Unlocked:    true,
+	}
 }
 
 func intervalUnitFactor(intervalUnit string) time.Duration {
@@ -56,12 +81,17 @@ func intervalUnitFactor(intervalUnit string) time.Duration {
 		return 24 * time.Hour
 	case "weeks":
 		return 7 * 24 * time.Hour
+	case "":
+		return -1
 	default:
 		panic(fmt.Errorf("unknown interval unit %s", intervalUnit))
 	}
 }
 
 func toIntOrPanic(value json.Number) int64 {
+	if value == "" {
+		return -1
+	}
 	intValue, err := value.Int64()
 	if err != nil {
 		panic(fmt.Errorf("could not convert '%v' to int: %v", value, err))

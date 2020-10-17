@@ -35,7 +35,7 @@ func main() {
 		optimalUnlocks := wanikani.ComputeOptimalUnlocks(system, progression)
 
 		fmt.Printf("%d: %v\n", idx, progression)
-		fmt.Printf("\t%v\n", optimalUnlocks)
+		fmt.Printf("\t%v\n", optimalUnlocks.UnlockTimes)
 	}
 }
 
