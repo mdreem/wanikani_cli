@@ -62,30 +62,3 @@ func CreateClient() data.Client {
 	apiKey := GetApiKey()
 	return data.Client{BaseUrl: "https://api.wanikani.com/v2/", ApiKey: apiKey, Client: &http.Client{}}
 }
-
-func getStageName(stage int) string {
-	switch stage {
-	case 0:
-		return "Not started"
-	case 1:
-		return "Apprentice 1"
-	case 2:
-		return "Apprentice 2"
-	case 3:
-		return "Apprentice 3"
-	case 4:
-		return "Apprentice 4"
-	case 5:
-		return "Guru 1"
-	case 6:
-		return "Guru 2"
-	case 7:
-		return "Master"
-	case 8:
-		return "Enlightened"
-	case 9:
-		return "Burned"
-	default:
-		return "Unknown"
-	}
-}
