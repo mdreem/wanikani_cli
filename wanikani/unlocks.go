@@ -50,7 +50,12 @@ func computeOptimalUnlocks(system data.SpacedRepetitionSystem, progression Progr
 		if int64(idx) < progression.SrsStage+1 {
 			optimalUnlocks[idx] = time.Time{}
 		} else if int64(idx) == progression.SrsStage+1 {
-			optimalUnlocks[idx] = progression.AvailableAt
+			now := time.Now()
+			if progression.AvailableAt.Before(now) {
+				optimalUnlocks[idx] = now.Truncate(time.Hour).UTC()
+			} else {
+				optimalUnlocks[idx] = progression.AvailableAt
+			}
 		} else if int64(idx) > progression.SrsStage+1 {
 			lastUnlock := optimalUnlocks[idx-1]
 			intervalDuration := time.Duration(toIntOrPanic(stage.Interval))

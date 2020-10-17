@@ -88,26 +88,28 @@ func parseTime(timeString string) time.Time {
 }
 
 func (o Progression) String() string {
+	location := time.Now().Location()
+
 	unlockedAt := ""
 	if (o.UnlockedAt == time.Time{}) {
 		unlockedAt = "Not unlocked yet"
 	} else {
-		unlockedAt = o.UnlockedAt.String()
+		unlockedAt = o.UnlockedAt.In(location).String()
 	}
 
 	passedAt := ""
 	if (o.PassedAt == time.Time{}) {
 		passedAt = "Not passed yet"
 	} else {
-		passedAt = o.PassedAt.String()
+		passedAt = o.PassedAt.In(location).String()
 	}
 
-	availableAt := 0
+	availableAt := ""
 	if (o.AvailableAt == time.Time{}) {
-		passedAt = "Not available yet"
+		availableAt = "Not available yet"
 	} else {
-		passedAt = o.AvailableAt.String()
+		availableAt = o.AvailableAt.In(location).String()
 	}
 
-	return fmt.Sprintf("%s: Unlocked: %s - Passed: %s - Available: %d [%d]", o.Characters, unlockedAt, passedAt, availableAt, o.SrsStage)
+	return fmt.Sprintf("%s: Unlocked: %s - Passed: %s - Available: %s [%d]", o.Characters, unlockedAt, passedAt, availableAt, o.SrsStage)
 }
