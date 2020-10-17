@@ -1,4 +1,4 @@
-package main
+package wanikani
 
 import (
 	"encoding/json"
@@ -25,7 +25,7 @@ func (unlocks Unlocks) String() string {
 	return strings.Join(times, ", ")
 }
 
-func computeOptimalUnlocks(system data.SpacedRepetitionSystem, progression Progression) Unlocks {
+func ComputeOptimalUnlocks(system data.SpacedRepetitionSystem, progression Progression) Unlocks {
 	optimalUnlocks := make([]time.Time, len(system.Stages))
 	for idx, stage := range system.Stages {
 		if int64(idx) < progression.SrsStage+1 {

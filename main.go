@@ -5,6 +5,7 @@ import (
 	"github.com/spf13/viper"
 	"net/http"
 	"wanikani_cli/data"
+	"wanikani_cli/wanikani"
 )
 
 func main() {
@@ -16,8 +17,8 @@ func main() {
 	fmt.Printf("userInformation: %v\n", userInformation)
 	fmt.Printf("level: %v\n", userInformation.Level)
 
-	radicalProgression := fetchRadicalProgression(client, "28")
-	kanjiProgression := fetchKanjiProgression(client, "28")
+	radicalProgression := wanikani.FetchRadicalProgression(client, "28")
+	kanjiProgression := wanikani.FetchKanjiProgression(client, "28")
 
 	spacedRepetitionSystems := client.FetchSpacedRepetitionSystems()
 	spacedRepetitionSystemMap := data.CreateSpacedRepetitionSystemMap(spacedRepetitionSystems)
@@ -31,7 +32,7 @@ func main() {
 	for idx, progression := range kanjiProgression {
 		system := spacedRepetitionSystemMap[progression.SrsSystem]
 
-		optimalUnlocks := computeOptimalUnlocks(system, progression)
+		optimalUnlocks := wanikani.ComputeOptimalUnlocks(system, progression)
 
 		fmt.Printf("%d: %v\n", idx, progression)
 		fmt.Printf("\t%v\n", optimalUnlocks)

@@ -1,4 +1,4 @@
-package main
+package wanikani
 
 import (
 	"fmt"
@@ -15,11 +15,11 @@ type Progression struct {
 	AvailableAt time.Time
 }
 
-func fetchRadicalProgression(client data.Client, level string) []Progression {
+func FetchRadicalProgression(client data.Client, level string) []Progression {
 	return fetchProgression(client, level, "radical")
 }
 
-func fetchKanjiProgression(client data.Client, level string) []Progression {
+func FetchKanjiProgression(client data.Client, level string) []Progression {
 	return fetchProgression(client, level, "kanji")
 }
 
