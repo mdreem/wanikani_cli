@@ -40,6 +40,44 @@ func (unlocks Unlocks) String() string {
 	}
 }
 
+func formatColumn(unlocks Unlocks) string {
+	times := make([]string, len(unlocks.UnlockTimes))
+
+	location := timeNow().Location()
+	for idx, element := range unlocks.UnlockTimes {
+		if idx == 0 {
+			continue
+		}
+		if !unlocks.Unlocked {
+			times[idx] = "Not unlocked    "
+		} else if (element == time.Time{}) {
+			times[idx] = "Passed          "
+		} else {
+			res := element.In(location).Format("02-01-2006 15:04")
+			times[idx] = res
+		}
+	}
+	return strings.Join(times, "|")
+}
+
+func printTable(progressions Progressions, kanjiProgression []Progression) {
+	headings := make([]string, len(progressions.KanjiProgression[0].UnlockTimes.UnlockTimes))
+	for idx := range progressions.KanjiProgression[0].UnlockTimes.UnlockTimes {
+		if idx == 0 {
+			continue
+		}
+		headings[idx] = fmt.Sprintf("%16s", getStageName(idx))
+	}
+	formattedHeader := fmt.Sprintf("   |%s|\n", strings.Join(headings, "|"))
+	fmt.Printf(formattedHeader)
+
+	for idx, progression := range kanjiProgression {
+		col := formatColumn(progression.UnlockTimes)
+		formattedColumn := fmt.Sprintf("%3d|%s|\n", idx, col)
+		fmt.Printf(formattedColumn)
+	}
+}
+
 func computeOptimalUnlocks(system data.SpacedRepetitionSystem, progression Progression) Unlocks {
 	optimalUnlocks := make([]time.Time, len(system.Stages))
 
@@ -101,7 +139,9 @@ func FindTimeOfPassingRatio(progressions Progressions) time.Time {
 		return firstUnlockTime.Before(secondUnlockTime)
 	})
 
-	ninetyPercentPoint := int(math.Ceil(0.9 * float64(len(kanjiProgression))))
+	printTable(progressions, kanjiProgression)
+
+	ninetyPercentPoint := int(math.Ceil(0.9*float64(len(kanjiProgression)))) - 1
 	return kanjiProgression[ninetyPercentPoint].UnlockTimes.UnlockTimes[5]
 }
 
