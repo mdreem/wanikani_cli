@@ -1,13 +1,14 @@
 package wanikani
 
 import (
+	"encoding/json"
 	"reflect"
 	"testing"
 	"time"
 	"wanikani_cli/data"
 )
 
-func TestComputeOptimalUnlocks(t *testing.T) {
+func Test_computeOptimalUnlocks(t *testing.T) {
 	srs := createSrs()
 
 	type args struct {
@@ -85,6 +86,104 @@ func TestComputeOptimalUnlocks(t *testing.T) {
 			}
 			if got := computeOptimalUnlocks(tt.args.system, tt.args.progression); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("computeOptimalUnlocks() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func Test_updateLockedKanji(t *testing.T) {
+	type args struct {
+		radicalProgressions []Progression
+		kanjiProgressions   []Progression
+	}
+	tests := []struct {
+		name string
+		args args
+		want []Unlocks
+	}{
+		{
+			name: "Kanji is not yet unlocked, but radical is",
+			args: args{
+				radicalProgressions: []Progression{
+					createRadicalProgression(getTime("09-01-2020 06:00"), true),
+				},
+				kanjiProgressions: []Progression{
+					createKanjiProgression(false, make([]time.Time, 10)),
+				},
+			},
+			want: []Unlocks{
+				{
+					UnlockTimes: createUnlockTimesWithUnlockSet(),
+					Unlocked:    false,
+				},
+			},
+		},
+		{
+			name: "Kanji is already unlocked, radical does not update kanji data",
+			args: args{
+				radicalProgressions: []Progression{
+					createRadicalProgression(getTime("09-01-2020 06:00"), true),
+				},
+				kanjiProgressions: []Progression{
+					createKanjiProgression(true, createUnlockTimes()),
+				},
+			},
+			want: []Unlocks{
+				{
+					UnlockTimes: createUnlockTimes(),
+					Unlocked:    true,
+				},
+			},
+		},
+		{
+			name: "Kanji is not yet unlocked, radical is also not unlocked",
+			args: args{
+				radicalProgressions: []Progression{
+					createRadicalProgression(time.Time{}, false),
+				},
+				kanjiProgressions: []Progression{
+					createKanjiProgression(false, make([]time.Time, 10)),
+				},
+			},
+			want: []Unlocks{
+				{
+					UnlockTimes: make([]time.Time, 10),
+					Unlocked:    false,
+				},
+			},
+		},
+		{
+			name: "Kanji is already unlocked, radical is not. Does not change kanji data",
+			args: args{
+				radicalProgressions: []Progression{
+					createRadicalProgression(time.Time{}, false),
+				},
+				kanjiProgressions: []Progression{
+					createKanjiProgression(true, createUnlockTimes()),
+				},
+			},
+			want: []Unlocks{
+				{
+					UnlockTimes: createUnlockTimes(),
+					Unlocked:    true,
+				},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			timeNow = func() time.Time {
+				return getTime("01-01-2020 00:00")
+			}
+			updateLockedKanji(&tt.args.radicalProgressions, &tt.args.kanjiProgressions)
+
+			got := make([]Unlocks, len(tt.args.kanjiProgressions))
+			for idx, progression := range tt.args.kanjiProgressions {
+				got[idx] = progression.UnlockTimes
+			}
+
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("updateLockedKanji() = %v, want %v", got, tt.want)
 			}
 		})
 	}
@@ -179,6 +278,46 @@ func createUnlockTimesShifted() []time.Time {
 	unlockTimes[9] = time.Time{}
 
 	return unlockTimes
+}
+
+func createUnlockTimesWithUnlockSet() []time.Time {
+	unlockTimes := make([]time.Time, 10)
+	unlockTimes[0] = getTime("09-01-2020 06:00")
+	return unlockTimes
+}
+
+func createRadicalProgression(passedAt time.Time, unlocked bool) Progression {
+	return Progression{
+		SubjectId:   "1",
+		Characters:  "X",
+		SrsStage:    0,
+		SrsSystem:   "1",
+		UnlockedAt:  time.Time{},
+		PassedAt:    passedAt,
+		AvailableAt: time.Time{},
+		UnlockTimes: Unlocks{
+			UnlockTimes: createUnlockTimes(),
+			Unlocked:    unlocked,
+		},
+		AmalgamationSubjectIds: []json.Number{"2", "100"},
+	}
+}
+
+func createKanjiProgression(unlocked bool, unlockTimes []time.Time) Progression {
+	return Progression{
+		SubjectId:   "2",
+		Characters:  "Y",
+		SrsStage:    0,
+		SrsSystem:   "1",
+		UnlockedAt:  time.Time{},
+		PassedAt:    time.Time{},
+		AvailableAt: time.Time{},
+		UnlockTimes: Unlocks{
+			UnlockTimes: unlockTimes,
+			Unlocked:    unlocked,
+		},
+		AmalgamationSubjectIds: []json.Number{},
+	}
 }
 
 func getTime(timeString string) time.Time {

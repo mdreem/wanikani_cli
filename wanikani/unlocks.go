@@ -36,7 +36,7 @@ func (unlocks Unlocks) String() string {
 	if unlocks.Unlocked {
 		return joinedTimes
 	} else {
-		return "not unlocked"
+		return fmt.Sprintf("not unlocked [%s]", joinedTimes)
 	}
 }
 
@@ -118,7 +118,29 @@ func computeOptimalUnlocks(system data.SpacedRepetitionSystem, progression Progr
 
 func UpdateOptimalUnlockTimes(spacedRepetitionSystems map[string]data.SpacedRepetitionSystem, progressions *Progressions) {
 	updateUnlockTimes(spacedRepetitionSystems, &(progressions.RadicalProgression))
+	updateLockedKanji(&(progressions.RadicalProgression), &(progressions.KanjiProgression))
 	updateUnlockTimes(spacedRepetitionSystems, &(progressions.KanjiProgression))
+}
+
+func updateLockedKanji(radicalProgressions *[]Progression, kanjiProgressions *[]Progression) {
+	kanjiProgressionMap := make(map[string]Progression)
+	for _, kanjiProgression := range *kanjiProgressions {
+		kanjiProgressionMap[kanjiProgression.SubjectId] = kanjiProgression
+	}
+
+	for _, radicalProgression := range *radicalProgressions {
+		if !radicalProgression.UnlockTimes.Unlocked {
+			continue
+		}
+		for _, containingKanji := range radicalProgression.AmalgamationSubjectIds {
+			kanji, ok := kanjiProgressionMap[containingKanji.String()]
+			if ok {
+				if !kanji.UnlockTimes.Unlocked {
+					kanji.UnlockTimes.UnlockTimes[0] = radicalProgression.PassedAt
+				}
+			}
+		}
+	}
 }
 
 func updateUnlockTimes(spacedRepetitionSystems map[string]data.SpacedRepetitionSystem, progressions *[]Progression) {

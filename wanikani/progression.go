@@ -1,19 +1,25 @@
 package wanikani
 
 import (
+	"encoding/json"
 	"fmt"
 	"time"
 	"wanikani_cli/data"
 )
 
 type Progression struct {
-	Characters  string
+	SubjectId  string
+	Characters string
+
+	SrsStage  int64
+	SrsSystem string
+
 	UnlockedAt  time.Time
 	PassedAt    time.Time
-	SrsStage    int64
-	SrsSystem   string
 	AvailableAt time.Time
 	UnlockTimes Unlocks
+
+	AmalgamationSubjectIds []json.Number
 }
 
 type Progressions struct {
@@ -47,12 +53,14 @@ func fetchProgression(client data.Client, level string, subjectType string) []Pr
 		}
 
 		progression := Progression{
-			Characters:  relatedSubject.Characters,
-			UnlockedAt:  unlockedAt,
-			AvailableAt: availableAt,
-			PassedAt:    passedAt,
-			SrsStage:    srsStage,
-			SrsSystem:   relatedSubject.SpacedRepetitionSystemId.String(),
+			Characters:             relatedSubject.Characters,
+			UnlockedAt:             unlockedAt,
+			AvailableAt:            availableAt,
+			PassedAt:               passedAt,
+			SrsStage:               srsStage,
+			SrsSystem:              relatedSubject.SpacedRepetitionSystemId.String(),
+			AmalgamationSubjectIds: relatedSubject.AmalgamationSubjectIds,
+			SubjectId:              relatedSubjectId,
 		}
 		progressionList = append(progressionList, progression)
 	}
