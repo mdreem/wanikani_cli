@@ -8,7 +8,90 @@ import (
 )
 
 func TestComputeOptimalUnlocks(t *testing.T) {
-	srs := data.SpacedRepetitionSystem{
+	srs := createSrs()
+
+	type args struct {
+		system        data.SpacedRepetitionSystem
+		progression   Progression
+		referenceTime time.Time
+	}
+	tests := []struct {
+		name string
+		args args
+		want Unlocks
+	}{
+		{
+			name: "level progression of unseen item",
+			args: args{
+				system: srs,
+				progression: Progression{
+					Characters:  "never seen",
+					UnlockedAt:  time.Time{},
+					PassedAt:    time.Time{},
+					SrsStage:    0,
+					SrsSystem:   "this",
+					AvailableAt: time.Time{},
+				},
+				referenceTime: getTime("01-01-2020 00:00"),
+			},
+			want: Unlocks{
+				UnlockTimes: make([]time.Time, 10),
+				Unlocked:    false,
+			},
+		},
+		{
+			name: "item unlocked at stage 2",
+			args: args{
+				system: srs,
+				progression: Progression{
+					Characters:  "never seen",
+					UnlockedAt:  getTime("01-01-2020 08:00"),
+					PassedAt:    time.Time{},
+					SrsStage:    2,
+					SrsSystem:   "this",
+					AvailableAt: getTime("01-01-2020 08:00"),
+				},
+				referenceTime: getTime("01-01-2020 00:00"),
+			},
+			want: Unlocks{
+				UnlockTimes: createUnlockTimes(),
+				Unlocked:    true,
+			},
+		},
+		{
+			name: "item unlocked at stage 2, but review starts later",
+			args: args{
+				system: srs,
+				progression: Progression{
+					Characters:  "never seen",
+					UnlockedAt:  getTime("01-01-2020 08:00"),
+					PassedAt:    time.Time{},
+					SrsStage:    2,
+					SrsSystem:   "this",
+					AvailableAt: getTime("01-01-2020 08:00"),
+				},
+				referenceTime: getTime("02-02-2020 09:00"),
+			},
+			want: Unlocks{
+				UnlockTimes: createUnlockTimesShifted(),
+				Unlocked:    true,
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			timeNow = func() time.Time {
+				return tt.args.referenceTime
+			}
+			if got := computeOptimalUnlocks(tt.args.system, tt.args.progression); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("computeOptimalUnlocks() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func createSrs() data.SpacedRepetitionSystem {
+	return data.SpacedRepetitionSystem{
 		Stages: []data.Stage{
 			{
 				Interval:     "",
@@ -62,63 +145,6 @@ func TestComputeOptimalUnlocks(t *testing.T) {
 			},
 		},
 	}
-
-	type args struct {
-		system      data.SpacedRepetitionSystem
-		progression Progression
-	}
-	tests := []struct {
-		name string
-		args args
-		want Unlocks
-	}{
-		{
-			name: "level progression of unseen item",
-			args: args{
-				system: srs,
-				progression: Progression{
-					Characters:  "never seen",
-					UnlockedAt:  time.Time{},
-					PassedAt:    time.Time{},
-					SrsStage:    0,
-					SrsSystem:   "this",
-					AvailableAt: time.Time{},
-				},
-			},
-			want: Unlocks{
-				UnlockTimes: make([]time.Time, 10),
-				Unlocked:    false,
-			},
-		},
-		{
-			name: "item unlocked at stage 2",
-			args: args{
-				system: srs,
-				progression: Progression{
-					Characters:  "never seen",
-					UnlockedAt:  getTime("01-01-2020 08:00"),
-					PassedAt:    time.Time{},
-					SrsStage:    2,
-					SrsSystem:   "this",
-					AvailableAt: getTime("01-01-2020 08:00"),
-				},
-			},
-			want: Unlocks{
-				UnlockTimes: createUnlockTimes(),
-				Unlocked:    true,
-			},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			timeNow = func() time.Time {
-				return getTime("01-01-2020 00:00")
-			}
-			if got := computeOptimalUnlocks(tt.args.system, tt.args.progression); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("computeOptimalUnlocks() = %v, want %v", got, tt.want)
-			}
-		})
-	}
 }
 
 func createUnlockTimes() []time.Time {
@@ -133,6 +159,23 @@ func createUnlockTimes() []time.Time {
 	unlockTimes[6] = getTime("23-01-2020 05:00")
 	unlockTimes[7] = getTime("22-02-2020 04:00")
 	unlockTimes[8] = getTime("21-06-2020 03:00")
+	unlockTimes[9] = time.Time{}
+
+	return unlockTimes
+}
+
+func createUnlockTimesShifted() []time.Time {
+	unlockTimes := make([]time.Time, 10)
+
+	unlockTimes[0] = time.Time{}
+	unlockTimes[1] = time.Time{}
+	unlockTimes[2] = time.Time{}
+	unlockTimes[3] = getTime("02-02-2020 09:00")
+	unlockTimes[4] = getTime("03-02-2020 08:00")
+	unlockTimes[5] = getTime("10-02-2020 07:00")
+	unlockTimes[6] = getTime("24-02-2020 06:00")
+	unlockTimes[7] = getTime("25-03-2020 05:00")
+	unlockTimes[8] = getTime("23-07-2020 04:00")
 	unlockTimes[9] = time.Time{}
 
 	return unlockTimes
