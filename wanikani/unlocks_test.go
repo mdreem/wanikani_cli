@@ -2,6 +2,7 @@ package wanikani
 
 import (
 	"encoding/json"
+	"fmt"
 	"reflect"
 	"testing"
 	"time"
@@ -189,6 +190,12 @@ func Test_updateLockedKanji(t *testing.T) {
 	}
 }
 
+func createSrsMap() map[string]data.SpacedRepetitionSystem {
+	srsMap := make(map[string]data.SpacedRepetitionSystem)
+	srsMap["1"] = createSrs()
+	return srsMap
+}
+
 func createSrs() data.SpacedRepetitionSystem {
 	return data.SpacedRepetitionSystem{
 		Stages: []data.Stage{
@@ -287,10 +294,16 @@ func createUnlockTimesWithUnlockSet() []time.Time {
 }
 
 func createRadicalProgression(passedAt time.Time, unlocked bool) Progression {
+	var srsStage int64
+	if unlocked {
+		srsStage = 2
+	} else {
+		srsStage = 0
+	}
 	return Progression{
 		SubjectId:   "1",
 		Characters:  "X",
-		SrsStage:    0,
+		SrsStage:    srsStage,
 		SrsSystem:   "1",
 		UnlockedAt:  time.Time{},
 		PassedAt:    passedAt,
@@ -304,10 +317,16 @@ func createRadicalProgression(passedAt time.Time, unlocked bool) Progression {
 }
 
 func createKanjiProgression(unlocked bool, unlockTimes []time.Time) Progression {
+	var srsStage int64
+	if unlocked {
+		srsStage = 2
+	} else {
+		srsStage = 0
+	}
 	return Progression{
 		SubjectId:   "2",
 		Characters:  "Y",
-		SrsStage:    0,
+		SrsStage:    srsStage,
 		SrsSystem:   "1",
 		UnlockedAt:  time.Time{},
 		PassedAt:    time.Time{},
@@ -323,4 +342,57 @@ func createKanjiProgression(unlocked bool, unlockTimes []time.Time) Progression 
 func getTime(timeString string) time.Time {
 	parsedTime, _ := time.Parse("02-01-2006 15:04", timeString)
 	return parsedTime
+}
+
+func TestUpdateOptimalUnlockTimes(t *testing.T) {
+	type args struct {
+		spacedRepetitionSystems map[string]data.SpacedRepetitionSystem
+		progressions            Progressions
+	}
+	tests := []struct {
+		name string
+		args args
+		want []Unlocks
+	}{
+		{
+			name: "test",
+			args: args{
+				spacedRepetitionSystems: createSrsMap(),
+				progressions: Progressions{
+					RadicalProgression: []Progression{
+						createRadicalProgression(getTime("02-02-2020 00:00"), true),
+					},
+					KanjiProgression: []Progression{
+						createKanjiProgression(false, make([]time.Time, 10)),
+					},
+				},
+			},
+			want: []Unlocks{
+				{
+					UnlockTimes: make([]time.Time, 10),
+					Unlocked:    false,
+				},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			timeNow = func() time.Time {
+				return getTime("01-01-2020 00:00")
+			}
+			UpdateOptimalUnlockTimes(tt.args.spacedRepetitionSystems, &tt.args.progressions)
+
+			got := make([]Unlocks, len(tt.args.progressions.KanjiProgression))
+			for idx, progression := range tt.args.progressions.KanjiProgression {
+				got[idx] = progression.UnlockTimes
+			}
+
+			fmt.Printf("Radical progression: %v\n", tt.args.progressions.RadicalProgression[0].UnlockTimes)
+			fmt.Printf("Kanji progression: %v\n", tt.args.progressions.KanjiProgression[0].UnlockTimes)
+
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("UpdateOptimalUnlockTimes() = %v, want %v", got, tt.want)
+			}
+		})
+	}
 }

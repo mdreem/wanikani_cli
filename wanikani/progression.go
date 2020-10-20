@@ -53,14 +53,14 @@ func fetchProgression(client data.Client, level string, subjectType string) []Pr
 		}
 
 		progression := Progression{
+			SubjectId:              relatedSubjectId,
 			Characters:             relatedSubject.Characters,
-			UnlockedAt:             unlockedAt,
-			AvailableAt:            availableAt,
-			PassedAt:               passedAt,
 			SrsStage:               srsStage,
 			SrsSystem:              relatedSubject.SpacedRepetitionSystemId.String(),
+			UnlockedAt:             unlockedAt,
+			PassedAt:               passedAt,
+			AvailableAt:            availableAt,
 			AmalgamationSubjectIds: relatedSubject.AmalgamationSubjectIds,
-			SubjectId:              relatedSubjectId,
 		}
 		progressionList = append(progressionList, progression)
 	}
