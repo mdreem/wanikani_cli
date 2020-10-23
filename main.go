@@ -37,6 +37,10 @@ func main() {
 		fmt.Printf("\t%v\n", optimalUnlocks.UnlockTimes)
 	}
 
+	fmt.Printf("========================================\n")
+	fmt.Printf("========================================\n")
+	fmt.Printf("========================================\n")
+
 	earliestProgression := wanikani.FindTimeOfPassingRatio(progressions)
 	fmt.Printf("Earliest progression time: %v", earliestProgression)
 }

@@ -42,7 +42,9 @@ func FetchProgressions(client data.Client, level string) Progressions {
 
 func fetchProgression(client data.Client, level string, subjectType string) []Progression {
 	assignments := client.FetchAssignments([]string{level}, []string{subjectType})
-	subjects := getSubjects(client, assignments)
+	subjects := getSubjects(client, level, subjectType)
+
+	fmt.Printf("subjectType: %s -> %v", subjectType, subjects)
 
 	progressionList := make([]Progression, 0)
 	for _, assignment := range assignments {
@@ -62,31 +64,58 @@ func fetchProgression(client data.Client, level string, subjectType string) []Pr
 			SubjectId:               relatedSubjectId,
 			Characters:              relatedSubject.Characters,
 			SrsStage:                srsStage,
-			SrsSystem:               relatedSubject.SpacedRepetitionSystemId.String(),
+			SrsSystem:               relatedSubject.SrsSystem,
 			UnlockedAt:              unlockedAt,
 			PassedAt:                passedAt,
 			AvailableAt:             availableAt,
-			UnlockByRadicalComputed: false,
+			UnlockByRadicalComputed: subjectType == "radical",
 			AmalgamationSubjectIds:  relatedSubject.AmalgamationSubjectIds,
 		}
 		progressionList = append(progressionList, progression)
+
+		relatedSubject.HasAssigment = true
+		subjects[relatedSubjectId] = relatedSubject
+	}
+
+	for subjectId, subject := range subjects {
+		if !subject.HasAssigment {
+			progression := Progression{
+				SubjectId:               subjectId,
+				Characters:              subject.Characters,
+				SrsStage:                0,
+				SrsSystem:               subject.SrsSystem,
+				UnlockedAt:              time.Time{},
+				PassedAt:                time.Time{},
+				AvailableAt:             time.Time{},
+				UnlockByRadicalComputed: false,
+				AmalgamationSubjectIds:  subject.AmalgamationSubjectIds,
+			}
+			progressionList = append(progressionList, progression)
+		}
 	}
 
 	return progressionList
 }
 
-func getSubjects(client data.Client, assignments []data.AssignmentEnvelope) map[string]data.Subject {
-	subjectIds := make([]string, len(assignments))
+type subjectForAssigment struct {
+	Characters             string
+	SrsSystem              string
+	AmalgamationSubjectIds []json.Number
+	HasAssigment           bool
+}
 
-	for idx, assignment := range assignments {
-		subjectIds[idx] = assignment.Data.SubjectId.String()
-	}
+func getSubjects(client data.Client, level string, subjectType string) map[string]subjectForAssigment {
+	subjectList := client.FetchSubjects(nil, []string{level}, []string{subjectType})
 
-	subjectList := client.FetchSubjects(subjectIds)
+	subjects := make(map[string]subjectForAssigment)
 
-	subjects := make(map[string]data.Subject)
 	for _, subject := range subjectList {
-		subjects[subject.Id.String()] = subject.Data
+		subjects[subject.Id.String()] = subjectForAssigment{
+			Characters:             subject.Data.Characters,
+			SrsSystem:              subject.Data.SpacedRepetitionSystemId.String(),
+			AmalgamationSubjectIds: subject.Data.AmalgamationSubjectIds,
+			HasAssigment:           false,
+		}
 	}
 	return subjects
 }

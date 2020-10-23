@@ -48,10 +48,8 @@ func formatColumn(unlocks Unlocks) string {
 		if idx == 0 {
 			continue
 		}
-		if !unlocks.Unlocked {
-			times[idx] = "Not unlocked    "
-		} else if (element == time.Time{}) {
-			times[idx] = "Passed          "
+		if (element == time.Time{}) {
+			times[idx] = "N/A             "
 		} else {
 			res := element.In(location).Format("02-01-2006 15:04")
 			times[idx] = res

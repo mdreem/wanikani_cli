@@ -59,11 +59,20 @@ type SubjectEnvelope struct {
 	Data           Subject     `json:"data"`
 }
 
-func (o Client) FetchSubjects(ids []string) []SubjectEnvelope {
+func (o Client) FetchSubjects(ids []string, levels []string, types []string) []SubjectEnvelope {
 	subjectEnvelope := SubjectsEnvelope{}
 
 	parameters := make(map[string]string)
-	parameters["ids"] = joinArrayToParameter(ids)
+
+	if ids != nil {
+		parameters["ids"] = joinArrayToParameter(ids)
+	}
+	if levels != nil {
+		parameters["levels"] = joinArrayToParameter(levels)
+	}
+	if types != nil {
+		parameters["types"] = joinArrayToParameter(types)
+	}
 
 	err := o.FetchWanikaniData("subjects", &subjectEnvelope, parameters)
 	if err != nil {
