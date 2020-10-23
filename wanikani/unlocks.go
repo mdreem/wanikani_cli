@@ -34,7 +34,7 @@ func (unlocks Unlocks) String() string {
 	joinedTimes := strings.Join(times, ", ")
 
 	if unlocks.Unlocked {
-		return joinedTimes
+		return fmt.Sprintf("unlocked [%s]", joinedTimes)
 	} else {
 		return fmt.Sprintf("not unlocked [%s]", joinedTimes)
 	}
@@ -60,7 +60,7 @@ func formatColumn(unlocks Unlocks) string {
 	return strings.Join(times, "|")
 }
 
-func printTable(progressions Progressions, kanjiProgression []Progression) {
+func printTable(progressions Progressions, radicalProgression []Progression, kanjiProgression []Progression) {
 	headings := make([]string, len(progressions.KanjiProgression[0].UnlockTimes.UnlockTimes))
 	for idx := range progressions.KanjiProgression[0].UnlockTimes.UnlockTimes {
 		if idx == 0 {
@@ -69,20 +69,40 @@ func printTable(progressions Progressions, kanjiProgression []Progression) {
 		headings[idx] = fmt.Sprintf("%16s", getStageName(idx))
 	}
 	formattedHeader := fmt.Sprintf("   | |      |Passed time     |%s|\n", strings.Join(headings, "|"))
-	fmt.Printf(formattedHeader)
+	fmt.Print(formattedHeader)
 
 	location := timeNow().Location()
+
+	fmt.Print("---------- Radicals --------------\n")
+
+	for idx, progression := range radicalProgression {
+		progressionTime := progression.PassedAt.In(location).Format("02-01-2006 15:04")
+
+		col := formatColumn(progression.UnlockTimes)
+		formattedColumn := fmt.Sprintf("%3d|%s|%5t|%s|%s|\n", idx, progression.Characters, progression.PassedAt != time.Time{}, progressionTime, col)
+		fmt.Print(formattedColumn)
+	}
+
+	fmt.Print("---------- Kanji --------------\n")
+
 	for idx, progression := range kanjiProgression {
 		progressionTime := progression.PassedAt.In(location).Format("02-01-2006 15:04")
 
 		col := formatColumn(progression.UnlockTimes)
 		formattedColumn := fmt.Sprintf("%3d|%s|%5t|%s|%s|\n", idx, progression.Characters, progression.PassedAt != time.Time{}, progressionTime, col)
-		fmt.Printf(formattedColumn)
+		fmt.Print(formattedColumn)
 	}
 }
 
 func computeOptimalUnlocks(system data.SpacedRepetitionSystem, progression Progression) Unlocks {
 	optimalUnlocks := make([]time.Time, len(system.Stages))
+
+	if !progression.isUnlocked() && !progression.UnlockByRadicalComputed {
+		return Unlocks{
+			UnlockTimes: optimalUnlocks,
+			Unlocked:    false,
+		}
+	}
 
 	for idx, stage := range system.Stages {
 		if int64(idx) < progression.SrsStage+1 {
@@ -144,6 +164,7 @@ func updateLockedKanji(radicalProgressions *[]Progression, kanjiProgressions *[]
 						kanji.UnlockTimes.UnlockTimes = make([]time.Time, len(radicalProgression.UnlockTimes.UnlockTimes))
 					}
 					kanji.UnlockTimes.UnlockTimes[0] = radicalProgression.PassedAt
+					kanji.UnlockByRadicalComputed = true
 				}
 			}
 		}
@@ -182,7 +203,7 @@ func FindTimeOfPassingRatio(progressions Progressions) time.Time {
 		return firstUnlockTime.Before(secondUnlockTime)
 	})
 
-	printTable(progressions, kanjiProgression)
+	printTable(progressions, progressions.RadicalProgression, kanjiProgression)
 
 	ninetyPercentPoint := int(math.Ceil(0.9*float64(len(kanjiProgression)))) - 1
 	return kanjiProgression[ninetyPercentPoint].UnlockTimes.UnlockTimes[5]

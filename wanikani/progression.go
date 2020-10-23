@@ -19,12 +19,18 @@ type Progression struct {
 	AvailableAt time.Time
 	UnlockTimes Unlocks
 
+	UnlockByRadicalComputed bool
+
 	AmalgamationSubjectIds []json.Number
 }
 
 type Progressions struct {
 	RadicalProgression []Progression
 	KanjiProgression   []Progression
+}
+
+func (progression Progression) isUnlocked() bool {
+	return progression.UnlockedAt != time.Time{}
 }
 
 func FetchProgressions(client data.Client, level string) Progressions {
@@ -53,14 +59,15 @@ func fetchProgression(client data.Client, level string, subjectType string) []Pr
 		}
 
 		progression := Progression{
-			SubjectId:              relatedSubjectId,
-			Characters:             relatedSubject.Characters,
-			SrsStage:               srsStage,
-			SrsSystem:              relatedSubject.SpacedRepetitionSystemId.String(),
-			UnlockedAt:             unlockedAt,
-			PassedAt:               passedAt,
-			AvailableAt:            availableAt,
-			AmalgamationSubjectIds: relatedSubject.AmalgamationSubjectIds,
+			SubjectId:               relatedSubjectId,
+			Characters:              relatedSubject.Characters,
+			SrsStage:                srsStage,
+			SrsSystem:               relatedSubject.SpacedRepetitionSystemId.String(),
+			UnlockedAt:              unlockedAt,
+			PassedAt:                passedAt,
+			AvailableAt:             availableAt,
+			UnlockByRadicalComputed: false,
+			AmalgamationSubjectIds:  relatedSubject.AmalgamationSubjectIds,
 		}
 		progressionList = append(progressionList, progression)
 	}
@@ -95,29 +102,29 @@ func parseTime(timeString string) time.Time {
 	return passedAt
 }
 
-func (o Progression) String() string {
+func (progression Progression) String() string {
 	location := time.Now().Location()
 
 	unlockedAt := ""
-	if (o.UnlockedAt == time.Time{}) {
+	if (progression.UnlockedAt == time.Time{}) {
 		unlockedAt = "Not unlocked yet"
 	} else {
-		unlockedAt = o.UnlockedAt.In(location).String()
+		unlockedAt = progression.UnlockedAt.In(location).String()
 	}
 
 	passedAt := ""
-	if (o.PassedAt == time.Time{}) {
+	if (progression.PassedAt == time.Time{}) {
 		passedAt = "Not passed yet"
 	} else {
-		passedAt = o.PassedAt.In(location).String()
+		passedAt = progression.PassedAt.In(location).String()
 	}
 
 	availableAt := ""
-	if (o.AvailableAt == time.Time{}) {
+	if (progression.AvailableAt == time.Time{}) {
 		availableAt = "Not available yet"
 	} else {
-		availableAt = o.AvailableAt.In(location).String()
+		availableAt = progression.AvailableAt.In(location).String()
 	}
 
-	return fmt.Sprintf("%s: Unlocked: %s - Passed: %s - Available: %s [%d]", o.Characters, unlockedAt, passedAt, availableAt, o.SrsStage)
+	return fmt.Sprintf("%s: Unlocked: %s - Passed: %s - Available: %s [%d]", progression.Characters, unlockedAt, passedAt, availableAt, progression.SrsStage)
 }

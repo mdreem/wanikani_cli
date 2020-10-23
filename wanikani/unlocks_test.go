@@ -86,7 +86,7 @@ func Test_computeOptimalUnlocks(t *testing.T) {
 				return tt.args.referenceTime
 			}
 			if got := computeOptimalUnlocks(tt.args.system, tt.args.progression); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("computeOptimalUnlocks() = %v, want %v", got, tt.want)
+				t.Errorf("computeOptimalUnlocks() = %v\n, want = %v", got, tt.want)
 			}
 		})
 	}
