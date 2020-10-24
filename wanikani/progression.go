@@ -14,10 +14,11 @@ type Progression struct {
 	SrsStage  int64
 	SrsSystem string
 
-	UnlockedAt  time.Time
-	PassedAt    time.Time
-	AvailableAt time.Time
-	UnlockTimes Unlocks
+	UnlockedAt             time.Time
+	PassedAt               time.Time
+	AvailableAt            time.Time
+	UnlockTimes            Unlocks
+	PotentiallyAvailableAt time.Time
 
 	UnlockByRadicalComputed bool
 

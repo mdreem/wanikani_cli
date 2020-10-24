@@ -107,10 +107,13 @@ func computeOptimalUnlocks(system data.SpacedRepetitionSystem, progression Progr
 			optimalUnlocks[idx] = time.Time{}
 		} else if int64(idx) == progression.SrsStage+1 {
 			now := timeNow()
-			if progression.AvailableAt.Before(now) {
+
+			referenceTime := getReferenceTimeForAvailability(progression)
+
+			if referenceTime.Before(now) {
 				optimalUnlocks[idx] = now.Truncate(time.Hour).UTC()
 			} else {
-				optimalUnlocks[idx] = progression.AvailableAt
+				optimalUnlocks[idx] = referenceTime
 			}
 		} else if int64(idx) > progression.SrsStage+1 {
 			lastUnlock := optimalUnlocks[idx-1]
@@ -138,6 +141,16 @@ func computeOptimalUnlocks(system data.SpacedRepetitionSystem, progression Progr
 	}
 }
 
+func getReferenceTimeForAvailability(progression Progression) time.Time {
+	if (progression.AvailableAt != time.Time{}) {
+		return progression.AvailableAt
+	} else if (progression.PotentiallyAvailableAt != time.Time{}) {
+		return progression.AvailableAt
+	} else {
+		return time.Time{}
+	}
+}
+
 func UpdateOptimalUnlockTimes(spacedRepetitionSystems map[string]data.SpacedRepetitionSystem, progressions *Progressions) {
 	updateUnlockTimes(spacedRepetitionSystems, &(progressions.RadicalProgression))
 	updateLockedKanji(&(progressions.RadicalProgression), &(progressions.KanjiProgression))
@@ -160,9 +173,9 @@ func updateLockedKanji(radicalProgressions *[]Progression, kanjiProgressions *[]
 						kanji.UnlockTimes.UnlockTimes = make([]time.Time, len(radicalProgression.UnlockTimes.UnlockTimes))
 					}
 					if (radicalProgression.PassedAt == time.Time{}) {
-						kanji.AvailableAt = radicalProgression.UnlockTimes.UnlockTimes[5]
+						kanji.PotentiallyAvailableAt = radicalProgression.UnlockTimes.UnlockTimes[5]
 					} else {
-						kanji.AvailableAt = radicalProgression.PassedAt
+						kanji.PotentiallyAvailableAt = radicalProgression.PassedAt
 					}
 					kanji.UnlockByRadicalComputed = true
 					(*kanjiProgressions)[kanjiIdx] = kanji
