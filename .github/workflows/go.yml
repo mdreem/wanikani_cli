@@ -30,6 +30,8 @@ jobs:
             curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
             dep ensure
         fi
+      env:
+        GOPATH: /home/runner/work/wanikani_cli/
 
     - name: Build
       run: make build
