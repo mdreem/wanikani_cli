@@ -2,7 +2,6 @@ package wanikani
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/mdreem/wanikani_cli/data"
 	"reflect"
 	"testing"
@@ -408,9 +407,6 @@ func TestUpdateOptimalUnlockTimes(t *testing.T) {
 				got[idx] = progression.UnlockTimes
 			}
 
-			fmt.Printf("Radical progression: %v\n", tt.args.progressions.RadicalProgression[0].UnlockTimes)
-			fmt.Printf("Kanji progression: %v\n", tt.args.progressions.KanjiProgression[0].UnlockTimes)
-
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("UpdateOptimalUnlockTimes() = %v, want %v", got, tt.want)
 			}
@@ -422,14 +418,14 @@ func createUnlockTimesForIndirectlyUpdatedKanji() []time.Time {
 	unlockTimes := make([]time.Time, 10)
 
 	unlockTimes[0] = time.Time{}
-	unlockTimes[1] = getTime("01-01-2020 00:00")
-	unlockTimes[2] = getTime("01-01-2020 04:00")
-	unlockTimes[3] = getTime("01-01-2020 12:00")
-	unlockTimes[4] = getTime("02-01-2020 11:00")
-	unlockTimes[5] = getTime("09-01-2020 10:00")
-	unlockTimes[6] = getTime("23-01-2020 09:00")
-	unlockTimes[7] = getTime("22-02-2020 08:00")
-	unlockTimes[8] = getTime("21-06-2020 07:00")
+	unlockTimes[1] = getTime("02-02-2020 00:00")
+	unlockTimes[2] = getTime("02-02-2020 04:00")
+	unlockTimes[3] = getTime("02-02-2020 12:00")
+	unlockTimes[4] = getTime("03-02-2020 11:00")
+	unlockTimes[5] = getTime("10-02-2020 10:00")
+	unlockTimes[6] = getTime("24-02-2020 09:00")
+	unlockTimes[7] = getTime("25-03-2020 08:00")
+	unlockTimes[8] = getTime("23-07-2020 07:00")
 	unlockTimes[9] = time.Time{}
 
 	return unlockTimes

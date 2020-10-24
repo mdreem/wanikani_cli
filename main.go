@@ -41,6 +41,8 @@ func main() {
 	fmt.Printf("========================================\n")
 	fmt.Printf("========================================\n")
 
+	wanikani.PrintTable(progressions, progressions.RadicalProgression, progressions.KanjiProgression)
+
 	earliestProgression := wanikani.FindTimeOfPassingRatio(progressions)
 	fmt.Printf("Earliest progression time: %v", earliestProgression)
 }
