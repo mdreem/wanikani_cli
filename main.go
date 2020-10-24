@@ -2,10 +2,10 @@ package main
 
 import (
 	"fmt"
+	"github.com/mdreem/wanikani_cli/data"
+	"github.com/mdreem/wanikani_cli/wanikani"
 	"github.com/spf13/viper"
 	"net/http"
-	"wanikani_cli/data"
-	"wanikani_cli/wanikani"
 )
 
 func main() {

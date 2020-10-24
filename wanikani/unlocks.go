@@ -3,11 +3,11 @@ package wanikani
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/mdreem/wanikani_cli/data"
 	"math"
 	"sort"
 	"strings"
 	"time"
-	"wanikani_cli/data"
 )
 
 var (

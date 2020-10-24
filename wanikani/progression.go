@@ -3,8 +3,8 @@ package wanikani
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/mdreem/wanikani_cli/data"
 	"time"
-	"wanikani_cli/data"
 )
 
 type Progression struct {
