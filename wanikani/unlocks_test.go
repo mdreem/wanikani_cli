@@ -93,6 +93,10 @@ func Test_computeOptimalUnlocks(t *testing.T) {
 }
 
 func Test_updateLockedKanji(t *testing.T) {
+	type unlockData struct {
+		Unlocks          []Unlocks
+		AvailableAtTimes []time.Time
+	}
 	type args struct {
 		radicalProgressions []Progression
 		kanjiProgressions   []Progression
@@ -100,10 +104,10 @@ func Test_updateLockedKanji(t *testing.T) {
 	tests := []struct {
 		name string
 		args args
-		want []Unlocks
+		want unlockData
 	}{
 		{
-			name: "Kanji is not yet unlocked, but radical is",
+			name: "Kanji is not yet unlocked, but radical is. Kanjis availability is updated.",
 			args: args{
 				radicalProgressions: []Progression{
 					createRadicalProgression(getTime("09-01-2020 06:00"), true),
@@ -112,11 +116,14 @@ func Test_updateLockedKanji(t *testing.T) {
 					createKanjiProgression(false, make([]time.Time, 10)),
 				},
 			},
-			want: []Unlocks{
-				{
-					UnlockTimes: createUnlockTimesWithUnlockSet(),
-					Unlocked:    false,
+			want: unlockData{
+				Unlocks: []Unlocks{
+					{
+						UnlockTimes: make([]time.Time, 10),
+						Unlocked:    false,
+					},
 				},
+				AvailableAtTimes: []time.Time{getTime("09-01-2020 06:00")},
 			},
 		},
 		{
@@ -129,15 +136,18 @@ func Test_updateLockedKanji(t *testing.T) {
 					createKanjiProgression(true, createUnlockTimes()),
 				},
 			},
-			want: []Unlocks{
-				{
-					UnlockTimes: createUnlockTimes(),
-					Unlocked:    true,
+			want: unlockData{
+				Unlocks: []Unlocks{
+					{
+						UnlockTimes: createUnlockTimes(),
+						Unlocked:    true,
+					},
 				},
+				AvailableAtTimes: make([]time.Time, 1),
 			},
 		},
 		{
-			name: "Kanji is not yet unlocked, radical is also not unlocked",
+			name: "Kanji is not yet unlocked, radical is also not unlocked. Kanji availability is estimated.",
 			args: args{
 				radicalProgressions: []Progression{
 					createRadicalProgression(time.Time{}, false),
@@ -146,11 +156,14 @@ func Test_updateLockedKanji(t *testing.T) {
 					createKanjiProgression(false, make([]time.Time, 10)),
 				},
 			},
-			want: []Unlocks{
-				{
-					UnlockTimes: make([]time.Time, 10),
-					Unlocked:    false,
+			want: unlockData{
+				Unlocks: []Unlocks{
+					{
+						UnlockTimes: make([]time.Time, 10),
+						Unlocked:    false,
+					},
 				},
+				AvailableAtTimes: []time.Time{getTime("09-01-2020 06:00")},
 			},
 		},
 		{
@@ -163,11 +176,14 @@ func Test_updateLockedKanji(t *testing.T) {
 					createKanjiProgression(true, createUnlockTimes()),
 				},
 			},
-			want: []Unlocks{
-				{
-					UnlockTimes: createUnlockTimes(),
-					Unlocked:    true,
+			want: unlockData{
+				Unlocks: []Unlocks{
+					{
+						UnlockTimes: createUnlockTimes(),
+						Unlocked:    true,
+					},
 				},
+				AvailableAtTimes: make([]time.Time, 1),
 			},
 		},
 	}
@@ -178,13 +194,22 @@ func Test_updateLockedKanji(t *testing.T) {
 			}
 			updateLockedKanji(&tt.args.radicalProgressions, &tt.args.kanjiProgressions)
 
-			got := make([]Unlocks, len(tt.args.kanjiProgressions))
+			gotUnlocks := make([]Unlocks, len(tt.args.kanjiProgressions))
 			for idx, progression := range tt.args.kanjiProgressions {
-				got[idx] = progression.UnlockTimes
+				gotUnlocks[idx] = progression.UnlockTimes
 			}
 
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("updateLockedKanji() = %v, want %v", got, tt.want)
+			gotAvailableAtTimes := make([]time.Time, len(tt.args.kanjiProgressions))
+			for idx, progression := range tt.args.kanjiProgressions {
+				gotAvailableAtTimes[idx] = progression.AvailableAt
+			}
+
+			if !reflect.DeepEqual(gotUnlocks, tt.want.Unlocks) {
+				t.Errorf("updateLockedKanji() = %v, want %v", gotUnlocks, tt.want.Unlocks)
+			}
+
+			if !reflect.DeepEqual(gotAvailableAtTimes, tt.want.AvailableAtTimes) {
+				t.Errorf("updateLockedKanji() = %v, want %v", gotAvailableAtTimes, tt.want.AvailableAtTimes)
 			}
 		})
 	}
@@ -284,12 +309,6 @@ func createUnlockTimesShifted() []time.Time {
 	unlockTimes[8] = getTime("23-07-2020 04:00")
 	unlockTimes[9] = time.Time{}
 
-	return unlockTimes
-}
-
-func createUnlockTimesWithUnlockSet() []time.Time {
-	unlockTimes := make([]time.Time, 10)
-	unlockTimes[0] = getTime("09-01-2020 06:00")
 	return unlockTimes
 }
 

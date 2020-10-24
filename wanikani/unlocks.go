@@ -145,24 +145,27 @@ func UpdateOptimalUnlockTimes(spacedRepetitionSystems map[string]data.SpacedRepe
 }
 
 func updateLockedKanji(radicalProgressions *[]Progression, kanjiProgressions *[]Progression) {
-	kanjiProgressionMap := make(map[string]Progression)
-	for _, kanjiProgression := range *kanjiProgressions {
-		kanjiProgressionMap[kanjiProgression.SubjectId] = kanjiProgression
+	kanjiProgressionMap := make(map[string]int)
+	for idx, kanjiProgression := range *kanjiProgressions {
+		kanjiProgressionMap[kanjiProgression.SubjectId] = idx
 	}
 
 	for _, radicalProgression := range *radicalProgressions {
-		if !radicalProgression.UnlockTimes.Unlocked {
-			continue
-		}
 		for _, containingKanji := range radicalProgression.AmalgamationSubjectIds {
-			kanji, ok := kanjiProgressionMap[containingKanji.String()]
+			kanjiIdx, ok := kanjiProgressionMap[containingKanji.String()]
 			if ok {
+				kanji := (*kanjiProgressions)[kanjiIdx]
 				if !kanji.UnlockTimes.Unlocked {
 					if kanji.UnlockTimes.UnlockTimes == nil {
 						kanji.UnlockTimes.UnlockTimes = make([]time.Time, len(radicalProgression.UnlockTimes.UnlockTimes))
 					}
-					kanji.UnlockTimes.UnlockTimes[0] = radicalProgression.PassedAt
+					if (radicalProgression.PassedAt == time.Time{}) {
+						kanji.AvailableAt = radicalProgression.UnlockTimes.UnlockTimes[5]
+					} else {
+						kanji.AvailableAt = radicalProgression.PassedAt
+					}
 					kanji.UnlockByRadicalComputed = true
+					(*kanjiProgressions)[kanjiIdx] = kanji
 				}
 			}
 		}
