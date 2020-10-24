@@ -3,10 +3,10 @@ package wanikani
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/mdreem/wanikani_cli/data"
 	"reflect"
 	"testing"
 	"time"
-	"wanikani_cli/data"
 )
 
 func Test_computeOptimalUnlocks(t *testing.T) {
