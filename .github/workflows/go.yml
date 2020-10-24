@@ -23,6 +23,8 @@ jobs:
 
     - name: Get dependencies
       run: |
+        pwd
+        echo ${GOPATH}
         go get -v -t -d ./...
         if [ -f Gopkg.toml ]; then
             curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
@@ -30,10 +32,7 @@ jobs:
         fi
 
     - name: Build
-      run: |
-        pwd
-        echo ${GOPATH}
-        make build
+      run: make build
 
     - name: Test
       run: make test
