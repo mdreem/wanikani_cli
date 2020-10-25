@@ -115,21 +115,25 @@ func updateLockedKanji(radicalProgressions *[]Progression, kanjiProgressions *[]
 		for _, containingKanji := range radicalProgression.AmalgamationSubjectIds {
 			kanjiIdx, ok := kanjiProgressionMap[containingKanji.String()]
 			if ok {
-				kanji := (*kanjiProgressions)[kanjiIdx]
-				if !kanji.UnlockTimes.Unlocked {
-					if kanji.UnlockTimes.UnlockTimes == nil {
-						kanji.UnlockTimes.UnlockTimes = make([]time.Time, len(radicalProgression.UnlockTimes.UnlockTimes))
-					}
-					if (radicalProgression.PassedAt == time.Time{}) {
-						kanji.PotentiallyAvailableAt = radicalProgression.UnlockTimes.UnlockTimes[5]
-					} else {
-						kanji.PotentiallyAvailableAt = radicalProgression.PassedAt
-					}
-					kanji.UnlockByRadicalComputed = true
-					(*kanjiProgressions)[kanjiIdx] = kanji
-				}
+				updateKanjiAvailability(kanjiProgressions, kanjiIdx, radicalProgression)
 			}
 		}
+	}
+}
+
+func updateKanjiAvailability(kanjiProgressions *[]Progression, kanjiIdx int, radicalProgression Progression) {
+	kanji := (*kanjiProgressions)[kanjiIdx]
+	if !kanji.UnlockTimes.Unlocked {
+		if kanji.UnlockTimes.UnlockTimes == nil {
+			kanji.UnlockTimes.UnlockTimes = make([]time.Time, len(radicalProgression.UnlockTimes.UnlockTimes))
+		}
+		if (radicalProgression.PassedAt == time.Time{}) {
+			kanji.PotentiallyAvailableAt = radicalProgression.UnlockTimes.UnlockTimes[5]
+		} else {
+			kanji.PotentiallyAvailableAt = radicalProgression.PassedAt
+		}
+		kanji.UnlockByRadicalComputed = true
+		(*kanjiProgressions)[kanjiIdx] = kanji
 	}
 }
 
