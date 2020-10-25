@@ -32,28 +32,44 @@ func PrintTable(progressions Progressions, radicalProgression []Progression, kan
 		}
 		headings[idx] = fmt.Sprintf("%16s", getStageName(idx))
 	}
-	formattedHeader := fmt.Sprintf("   | |      |Passed time     |%s|\n", strings.Join(headings, "|"))
+	formattedHeader := fmt.Sprintf("   |\u3000|Passed|Passed time     |%s|\n", strings.Join(headings, "|"))
 	fmt.Print(formattedHeader)
 
 	location := timeNow().Location()
 
-	fmt.Print("---------- Radicals --------------\n")
+	fmt.Print("-------------- Radicals --------------\n")
 
 	for idx, progression := range radicalProgression {
-		progressionTime := progression.PassedAt.In(location).Format("02.01.2006 15:04")
+		var progressionTime string
+		if (progression.PassedAt != time.Time{}) {
+			progressionTime = progression.PassedAt.In(location).Format("02.01.2006 15:04")
+		} else {
+			progressionTime = "                "
+		}
 
 		col := formatColumn(progression.UnlockTimes)
-		formattedColumn := fmt.Sprintf("%3d|%s|%5t|%s|%s|\n", idx, progression.Characters, progression.PassedAt != time.Time{}, progressionTime, col)
+		var characters string
+		if progression.Characters == "" {
+			characters = "\u3000"
+		} else {
+			characters = progression.Characters
+		}
+		formattedColumn := fmt.Sprintf("%3d|%s|%6t|%s|%s|\n", idx, characters, progression.PassedAt != time.Time{}, progressionTime, col)
 		fmt.Print(formattedColumn)
 	}
 
-	fmt.Print("---------- Kanji --------------\n")
+	fmt.Print("-------------- Kanji --------------\n")
 
 	for idx, progression := range kanjiProgression {
-		progressionTime := progression.PassedAt.In(location).Format("02.01.2006 15:04")
+		var progressionTime string
+		if (progression.PassedAt != time.Time{}) {
+			progressionTime = progression.PassedAt.In(location).Format("02.01.2006 15:04")
+		} else {
+			progressionTime = "                "
+		}
 
 		col := formatColumn(progression.UnlockTimes)
-		formattedColumn := fmt.Sprintf("%3d|%s|%5t|%s|%s|\n", idx, progression.Characters, progression.PassedAt != time.Time{}, progressionTime, col)
+		formattedColumn := fmt.Sprintf("%3d|%s|%6t|%s|%s|\n", idx, progression.Characters, progression.PassedAt != time.Time{}, progressionTime, col)
 		fmt.Print(formattedColumn)
 	}
 }

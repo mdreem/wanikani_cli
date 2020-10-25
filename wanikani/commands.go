@@ -3,6 +3,7 @@ package wanikani
 import (
 	"fmt"
 	"github.com/mdreem/wanikani_cli/data"
+	"time"
 )
 
 type Command int
@@ -32,7 +33,8 @@ func PrintLevelProgress() {
 	PrintTable(progressions, progressions.RadicalProgression, progressions.KanjiProgression)
 
 	earliestProgression := FindTimeOfPassingRatio(progressions)
-	fmt.Printf("Earliest progression time: %v", earliestProgression)
+	location := time.Now().Location()
+	fmt.Printf("\nEarliest progression time: %v", earliestProgression.In(location))
 }
 
 func PrintUserInfo() {
