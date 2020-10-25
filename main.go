@@ -1,32 +1,60 @@
 package main
 
 import (
+	"flag"
 	"fmt"
-	"github.com/mdreem/wanikani_cli/data"
 	"github.com/mdreem/wanikani_cli/wanikani"
 	"github.com/spf13/viper"
-	"net/http"
+	"os"
 )
 
 func main() {
+	commandInfo := parseArguments()
+
 	initializeConfiguration()
 
-	client := CreateClient()
-	userInformation := client.FetchUserInformation()
+	switch commandInfo.Command {
+	case wanikani.LevelProgress:
+		wanikani.PrintLevelProgress()
+	case wanikani.UserInfo:
+		fmt.Println("Not implemented yet")
+	}
+}
 
-	fmt.Printf("Fetching information for user '%s' at level %v\n", userInformation.Username, userInformation.Level)
+func parseArguments() wanikani.CommandInfo {
+	if len(os.Args) < 2 {
+		fmt.Println("expected a subcommand")
+		os.Exit(1)
+	}
 
-	progressions := wanikani.FetchProgressions(client, userInformation.Level.String())
+	levelProgress := flag.NewFlagSet("foo", flag.ExitOnError)
+	userInfo := flag.NewFlagSet("foo", flag.ExitOnError)
 
-	spacedRepetitionSystems := client.FetchSpacedRepetitionSystems()
-	spacedRepetitionSystemMap := data.CreateSpacedRepetitionSystemMap(spacedRepetitionSystems)
+	var command wanikani.Command
 
-	wanikani.UpdateOptimalUnlockTimes(spacedRepetitionSystemMap, &progressions)
+	switch os.Args[1] {
+	case "level_progress":
+		err := levelProgress.Parse(os.Args[2:])
+		if err != nil {
+			panic(fmt.Errorf("error parsing paramerers for level_progress: %v", err))
+		}
+		fmt.Println("subcommand 'level_progress'")
+		command = wanikani.LevelProgress
+	case "user_info":
+		err := userInfo.Parse(os.Args[2:])
+		if err != nil {
+			panic(fmt.Errorf("error parsing paramerers for user_info: %v", err))
+		}
+		fmt.Println("subcommand 'userInfo'")
+		command = wanikani.UserInfo
+	default:
+		fmt.Println("expected a subcommand")
+		os.Exit(1)
+	}
 
-	wanikani.PrintTable(progressions, progressions.RadicalProgression, progressions.KanjiProgression)
-
-	earliestProgression := wanikani.FindTimeOfPassingRatio(progressions)
-	fmt.Printf("Earliest progression time: %v", earliestProgression)
+	return wanikani.CommandInfo{
+		Command: command,
+	}
 }
 
 func initializeConfiguration() {
@@ -38,18 +66,4 @@ func initializeConfiguration() {
 	if err != nil {
 		panic(fmt.Errorf("fatal error: %s", err))
 	}
-}
-
-func GetAPIKey() string {
-	apiConfig := viper.GetStringMapString("api")
-	if apiConfig == nil {
-		panic(fmt.Errorf("cannot find section 'api' in config file"))
-	}
-	apiKey := apiConfig["api_key"]
-	return apiKey
-}
-
-func CreateClient() data.Client {
-	apiKey := GetAPIKey()
-	return data.Client{BaseURL: "https://api.wanikani.com/v2/", APIKey: apiKey, Client: &http.Client{}}
 }
