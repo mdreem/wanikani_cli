@@ -109,7 +109,7 @@ func Test_updateLockedKanji(t *testing.T) {
 			name: "Kanji is not yet unlocked, but radical is. Kanjis availability is updated.",
 			args: args{
 				radicalProgressions: []Progression{
-					createRadicalProgression(getTime("09-01-2020 06:00"), true),
+					createRadicalProgression(getTime("09-01-2020 06:00"), time.Time{}, true),
 				},
 				kanjiProgressions: []Progression{
 					createKanjiProgression(false, make([]time.Time, 10)),
@@ -129,7 +129,7 @@ func Test_updateLockedKanji(t *testing.T) {
 			name: "Kanji is already unlocked, radical does not update kanji data",
 			args: args{
 				radicalProgressions: []Progression{
-					createRadicalProgression(getTime("09-01-2020 06:00"), true),
+					createRadicalProgression(getTime("09-01-2020 06:00"), time.Time{}, true),
 				},
 				kanjiProgressions: []Progression{
 					createKanjiProgression(true, createUnlockTimes()),
@@ -149,7 +149,7 @@ func Test_updateLockedKanji(t *testing.T) {
 			name: "Kanji is not yet unlocked, radical is also not unlocked. Kanji availability is estimated.",
 			args: args{
 				radicalProgressions: []Progression{
-					createRadicalProgression(time.Time{}, false),
+					createRadicalProgression(time.Time{}, time.Time{}, false),
 				},
 				kanjiProgressions: []Progression{
 					createKanjiProgression(false, make([]time.Time, 10)),
@@ -169,7 +169,7 @@ func Test_updateLockedKanji(t *testing.T) {
 			name: "Kanji is already unlocked, radical is not. Does not change kanji data",
 			args: args{
 				radicalProgressions: []Progression{
-					createRadicalProgression(time.Time{}, false),
+					createRadicalProgression(time.Time{}, time.Time{}, false),
 				},
 				kanjiProgressions: []Progression{
 					createKanjiProgression(true, createUnlockTimes()),
@@ -311,7 +311,7 @@ func createUnlockTimesShifted() []time.Time {
 	return unlockTimes
 }
 
-func createRadicalProgression(passedAt time.Time, unlocked bool) Progression {
+func createRadicalProgression(passedAt time.Time, potentiallyAvailableAt time.Time, unlocked bool) Progression {
 	var srsStage int64
 	if unlocked {
 		srsStage = 2
@@ -319,19 +319,23 @@ func createRadicalProgression(passedAt time.Time, unlocked bool) Progression {
 		srsStage = 0
 	}
 	return Progression{
-		SubjectId:              "1",
-		Characters:             "X",
-		SrsStage:               srsStage,
-		SrsSystem:              "1",
-		UnlockedAt:             time.Time{},
-		PassedAt:               passedAt,
-		AvailableAt:            time.Time{},
-		PotentiallyAvailableAt: time.Time{},
+		SubjectId:  "1",
+		Characters: "X",
+		SrsStage:   srsStage,
+		SrsSystem:  "1",
+
+		UnlockedAt:  time.Time{},
+		PassedAt:    passedAt,
+		AvailableAt: time.Time{},
 		UnlockTimes: Unlocks{
 			UnlockTimes: createUnlockTimes(),
 			Unlocked:    unlocked,
 		},
+
 		AmalgamationSubjectIds: []json.Number{"2", "100"},
+
+		PotentiallyAvailableAt:  potentiallyAvailableAt,
+		UnlockByRadicalComputed: potentiallyAvailableAt != time.Time{},
 	}
 }
 
@@ -380,7 +384,7 @@ func TestUpdateOptimalUnlockTimes(t *testing.T) {
 				spacedRepetitionSystems: createSrsMap(),
 				progressions: Progressions{
 					RadicalProgression: []Progression{
-						createRadicalProgression(getTime("02-02-2020 00:00"), true),
+						createRadicalProgression(getTime("02-02-2020 00:00"), time.Time{}, true),
 					},
 					KanjiProgression: []Progression{
 						createKanjiProgression(false, make([]time.Time, 10)),
@@ -390,6 +394,26 @@ func TestUpdateOptimalUnlockTimes(t *testing.T) {
 			want: []Unlocks{
 				{
 					UnlockTimes: createUnlockTimesForIndirectlyUpdatedKanji(),
+					Unlocked:    false,
+				},
+			},
+		},
+		{
+			name: "Optimal unlock times with locked radical and locked kanji",
+			args: args{
+				spacedRepetitionSystems: createSrsMap(),
+				progressions: Progressions{
+					RadicalProgression: []Progression{
+						createRadicalProgression(time.Time{}, getTime("03-03-2020 00:00"), false),
+					},
+					KanjiProgression: []Progression{
+						createKanjiProgression(false, make([]time.Time, 10)),
+					},
+				},
+			},
+			want: []Unlocks{
+				{
+					UnlockTimes: createUnlockTimesForIndirectlyUpdatedKanjiViaLockedRadical(),
 					Unlocked:    false,
 				},
 			},
@@ -426,6 +450,23 @@ func createUnlockTimesForIndirectlyUpdatedKanji() []time.Time {
 	unlockTimes[6] = getTime("24-02-2020 09:00")
 	unlockTimes[7] = getTime("25-03-2020 08:00")
 	unlockTimes[8] = getTime("23-07-2020 07:00")
+	unlockTimes[9] = time.Time{}
+
+	return unlockTimes
+}
+
+func createUnlockTimesForIndirectlyUpdatedKanjiViaLockedRadical() []time.Time {
+	unlockTimes := make([]time.Time, 10)
+
+	unlockTimes[0] = time.Time{}
+	unlockTimes[1] = getTime("11-03-2020 10:00")
+	unlockTimes[2] = getTime("11-03-2020 14:00")
+	unlockTimes[3] = getTime("11-03-2020 22:00")
+	unlockTimes[4] = getTime("12-03-2020 21:00")
+	unlockTimes[5] = getTime("19-03-2020 20:00")
+	unlockTimes[6] = getTime("02-04-2020 19:00")
+	unlockTimes[7] = getTime("02-05-2020 18:00")
+	unlockTimes[8] = getTime("30-08-2020 17:00")
 	unlockTimes[9] = time.Time{}
 
 	return unlockTimes
