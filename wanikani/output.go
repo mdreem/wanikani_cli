@@ -17,7 +17,7 @@ func formatColumn(unlocks Unlocks) string {
 		if (element == time.Time{}) {
 			times[idx] = "N/A             "
 		} else {
-			res := element.In(location).Format("02-01-2006 15:04")
+			res := element.In(location).Format("02.01.2006 15:04")
 			times[idx] = res
 		}
 	}
@@ -40,7 +40,7 @@ func PrintTable(progressions Progressions, radicalProgression []Progression, kan
 	fmt.Print("---------- Radicals --------------\n")
 
 	for idx, progression := range radicalProgression {
-		progressionTime := progression.PassedAt.In(location).Format("02-01-2006 15:04")
+		progressionTime := progression.PassedAt.In(location).Format("02.01.2006 15:04")
 
 		col := formatColumn(progression.UnlockTimes)
 		formattedColumn := fmt.Sprintf("%3d|%s|%5t|%s|%s|\n", idx, progression.Characters, progression.PassedAt != time.Time{}, progressionTime, col)
@@ -50,7 +50,7 @@ func PrintTable(progressions Progressions, radicalProgression []Progression, kan
 	fmt.Print("---------- Kanji --------------\n")
 
 	for idx, progression := range kanjiProgression {
-		progressionTime := progression.PassedAt.In(location).Format("02-01-2006 15:04")
+		progressionTime := progression.PassedAt.In(location).Format("02.01.2006 15:04")
 
 		col := formatColumn(progression.UnlockTimes)
 		formattedColumn := fmt.Sprintf("%3d|%s|%5t|%s|%s|\n", idx, progression.Characters, progression.PassedAt != time.Time{}, progressionTime, col)

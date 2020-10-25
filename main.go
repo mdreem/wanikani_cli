@@ -14,8 +14,7 @@ func main() {
 	client := CreateClient()
 	userInformation := client.FetchUserInformation()
 
-	fmt.Printf("userInformation: %v\n", userInformation)
-	fmt.Printf("level: %v\n", userInformation.Level)
+	fmt.Printf("Fetching information for user '%s' at level %v\n", userInformation.Username, userInformation.Level)
 
 	progressions := wanikani.FetchProgressions(client, "29")
 
@@ -23,23 +22,6 @@ func main() {
 	spacedRepetitionSystemMap := data.CreateSpacedRepetitionSystemMap(spacedRepetitionSystems)
 
 	wanikani.UpdateOptimalUnlockTimes(spacedRepetitionSystemMap, &progressions)
-
-	fmt.Print("Radicals\n")
-	for idx, progression := range progressions.RadicalProgression {
-		fmt.Printf("%d: %v\n", idx, progression)
-	}
-
-	fmt.Print("Kanji\n")
-	for idx, progression := range progressions.KanjiProgression {
-		optimalUnlocks := progression.UnlockTimes
-
-		fmt.Printf("%d: %v\n", idx, progression)
-		fmt.Printf("\t%v\n", optimalUnlocks.UnlockTimes)
-	}
-
-	fmt.Printf("========================================\n")
-	fmt.Printf("========================================\n")
-	fmt.Printf("========================================\n")
 
 	wanikani.PrintTable(progressions, progressions.RadicalProgression, progressions.KanjiProgression)
 

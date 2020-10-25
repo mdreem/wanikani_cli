@@ -45,8 +45,6 @@ func fetchProgression(client data.Client, level string, subjectType string) []Pr
 	assignments := client.FetchAssignments([]string{level}, []string{subjectType})
 	subjects := getSubjects(client, level, subjectType)
 
-	fmt.Printf("subjectType: %s -> %v", subjectType, subjects)
-
 	progressionList := make([]Progression, 0)
 	for _, assignment := range assignments {
 		relatedSubjectID := assignment.Data.SubjectID.String()
