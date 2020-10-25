@@ -319,7 +319,7 @@ func createRadicalProgression(passedAt time.Time, potentiallyAvailableAt time.Ti
 		srsStage = 0
 	}
 	return Progression{
-		SubjectId:  "1",
+		SubjectID:  "1",
 		Characters: "X",
 		SrsStage:   srsStage,
 		SrsSystem:  "1",
@@ -347,7 +347,7 @@ func createKanjiProgression(unlocked bool, unlockTimes []time.Time) Progression 
 		srsStage = 0
 	}
 	return Progression{
-		SubjectId:              "2",
+		SubjectID:              "2",
 		Characters:             "Y",
 		SrsStage:               srsStage,
 		SrsSystem:              "1",

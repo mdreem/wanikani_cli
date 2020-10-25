@@ -7,7 +7,7 @@ import (
 
 type Assignment struct {
 	CreatedAt     string      `json:"created_at"`
-	SubjectId     json.Number `json:"subject_id"`
+	SubjectID     json.Number `json:"subject_id"`
 	SubjectType   string      `json:"subject_type"`
 	SrsStage      json.Number `json:"srs_stage"`
 	UnlockedAt    string      `json:"unlocked_at"`
@@ -20,7 +20,7 @@ type Assignment struct {
 
 type AssignmentsEnvelope struct {
 	Object         string               `json:"object"`
-	Url            string               `json:"url"`
+	URL            string               `json:"url"`
 	Pages          Pages                `json:"pages"`
 	TotalCount     json.Number          `json:"total_count"`
 	DataUploadedAt string               `json:"data_updated_at"`
@@ -28,9 +28,9 @@ type AssignmentsEnvelope struct {
 }
 
 type AssignmentEnvelope struct {
-	Id             json.Number `json:"id"`
+	ID             json.Number `json:"id"`
 	Object         string      `json:"object"`
-	Url            string      `json:"url"`
+	URL            string      `json:"url"`
 	DataUploadedAt string      `json:"data_updated_at"`
 	Data           Assignment  `json:"data"`
 }

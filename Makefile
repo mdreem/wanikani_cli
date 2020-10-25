@@ -8,7 +8,7 @@ test:
 	go test -v ./... -covermode=count -coverprofile=coverage.out
 
 lint:
-	golangci-lint run
+	golangci-lint run --config=.github/linters/golangci.yml
 
 compile:
 	GOOS=darwin GOARCH=amd64 go build -o bin/main-darwin-amd64 main.go

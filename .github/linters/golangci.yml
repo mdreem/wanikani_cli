@@ -4,7 +4,6 @@ linters:
     - depguard
     - gocritic
     - gofmt
-    - goimports
     - golint
     - goprintffuncname
     - gosimple
@@ -12,10 +11,8 @@ linters:
     - ineffassign
     - misspell
     - nakedret
-    - noctx
     - nolintlint
     - rowserrcheck
-    - scopelint
     - staticcheck
     - structcheck
     - stylecheck

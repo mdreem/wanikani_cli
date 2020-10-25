@@ -6,10 +6,10 @@ import (
 )
 
 type User struct {
-	Id                       string       `json:"id"`
+	ID                       string       `json:"id"`
 	Username                 string       `json:"username"`
 	Level                    json.Number  `json:"level"`
-	ProfileUrl               string       `json:"profile_url"`
+	ProfileURL               string       `json:"profile_url"`
 	StartedAt                string       `json:"started_at"`
 	CurrentVacationStartedAt string       `json:"current_vacation_started_at"`
 	Subscription             Subscription `json:"subscription"`
@@ -17,7 +17,7 @@ type User struct {
 }
 
 type Preferences struct {
-	DefaultVoiceActorId        json.Number `json:"default_voice_actor_id"`
+	DefaultVoiceActorID        json.Number `json:"default_voice_actor_id"`
 	LessonsAutoplayAudio       bool        `json:"lessons_autoplay_audio"`
 	LessonsBatchSize           json.Number `json:"lessons_batch_size"`
 	LessonsPresentationOrder   string      `json:"lessons_presentation_order"`
@@ -34,7 +34,7 @@ type Subscription struct {
 
 type UserEnvelope struct {
 	Object         string `json:"object"`
-	Url            string `json:"url"`
+	URL            string `json:"url"`
 	DataUploadedAt string `json:"data_updated_at"`
 	Data           User   `json:"data"`
 }

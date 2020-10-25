@@ -23,7 +23,7 @@ type Subject struct {
 	Level       json.Number `json:"level"`
 	Slug        string      `json:"slug"`
 	HiddenAt    string      `json:"hidden_at"`
-	DocumentUrl string      `json:"document_url"`
+	DocumentURL string      `json:"document_url"`
 	Characters  string      `json:"characters"`
 
 	Meanings []Meaning `json:"meanings"`
@@ -39,12 +39,12 @@ type Subject struct {
 	ReadingHint     string `json:"reading_hint"`
 
 	LessonPosition           json.Number `json:"lesson_position"`
-	SpacedRepetitionSystemId json.Number `json:"spaced_repetition_system_id"`
+	SpacedRepetitionSystemID json.Number `json:"spaced_repetition_system_id"`
 }
 
 type SubjectsEnvelope struct {
 	Object         string            `json:"object"`
-	Url            string            `json:"url"`
+	URL            string            `json:"url"`
 	Pages          Pages             `json:"pages"`
 	TotalCount     json.Number       `json:"total_count"`
 	DataUploadedAt string            `json:"data_updated_at"`
@@ -52,9 +52,9 @@ type SubjectsEnvelope struct {
 }
 
 type SubjectEnvelope struct {
-	Id             json.Number `json:"id"`
+	ID             json.Number `json:"id"`
 	Object         string      `json:"object"`
-	Url            string      `json:"url"`
+	URL            string      `json:"url"`
 	DataUploadedAt string      `json:"data_updated_at"`
 	Data           Subject     `json:"data"`
 }

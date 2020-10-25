@@ -27,7 +27,7 @@ type SpacedRepetitionSystem struct {
 
 type SpacedRepetitionSystemsEnvelope struct {
 	Object         string                           `json:"object"`
-	Url            string                           `json:"url"`
+	URL            string                           `json:"url"`
 	Pages          Pages                            `json:"pages"`
 	TotalCount     json.Number                      `json:"total_count"`
 	DataUploadedAt string                           `json:"data_updated_at"`
@@ -35,9 +35,9 @@ type SpacedRepetitionSystemsEnvelope struct {
 }
 
 type SpacedRepetitionSystemEnvelope struct {
-	Id             json.Number            `json:"id"`
+	ID             json.Number            `json:"id"`
 	Object         string                 `json:"object"`
-	Url            string                 `json:"url"`
+	URL            string                 `json:"url"`
 	DataUploadedAt string                 `json:"data_updated_at"`
 	Data           SpacedRepetitionSystem `json:"data"`
 }
@@ -68,7 +68,7 @@ func CreateSpacedRepetitionSystemMap(spacedRepetitionSystemList []SpacedRepetiti
 	spacedRepetitionSystems := make(map[string]SpacedRepetitionSystem, len(spacedRepetitionSystemList))
 
 	for _, spacedRepetitionSystem := range spacedRepetitionSystemList {
-		spacedRepetitionSystems[spacedRepetitionSystem.Id.String()] = spacedRepetitionSystem.Data
+		spacedRepetitionSystems[spacedRepetitionSystem.ID.String()] = spacedRepetitionSystem.Data
 		sort.Slice(spacedRepetitionSystem.Data.Stages, func(i, j int) bool {
 			return toIntOrPanic(spacedRepetitionSystem.Data.Stages[i].Interval) < toIntOrPanic(spacedRepetitionSystem.Data.Stages[j].Interval)
 		})

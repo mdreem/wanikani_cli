@@ -54,11 +54,11 @@ func initializeConfiguration() {
 
 	err := viper.ReadInConfig()
 	if err != nil {
-		panic(fmt.Errorf("Fatal error: %s \n", err))
+		panic(fmt.Errorf("fatal error: %s", err))
 	}
 }
 
-func GetApiKey() string {
+func GetAPIKey() string {
 	apiConfig := viper.GetStringMapString("api")
 	if apiConfig == nil {
 		panic(fmt.Errorf("cannot find section 'api' in config file"))
@@ -68,6 +68,6 @@ func GetApiKey() string {
 }
 
 func CreateClient() data.Client {
-	apiKey := GetApiKey()
-	return data.Client{BaseUrl: "https://api.wanikani.com/v2/", ApiKey: apiKey, Client: &http.Client{}}
+	apiKey := GetAPIKey()
+	return data.Client{BaseURL: "https://api.wanikani.com/v2/", APIKey: apiKey, Client: &http.Client{}}
 }

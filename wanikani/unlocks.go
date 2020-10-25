@@ -35,9 +35,8 @@ func (unlocks Unlocks) String() string {
 
 	if unlocks.Unlocked {
 		return fmt.Sprintf("unlocked [%s]", joinedTimes)
-	} else {
-		return fmt.Sprintf("not unlocked [%s]", joinedTimes)
 	}
+	return fmt.Sprintf("not unlocked [%s]", joinedTimes)
 }
 
 func computeOptimalUnlocks(system data.SpacedRepetitionSystem, progression Progression) Unlocks {
@@ -51,9 +50,10 @@ func computeOptimalUnlocks(system data.SpacedRepetitionSystem, progression Progr
 	}
 
 	for idx, stage := range system.Stages {
-		if int64(idx) < progression.SrsStage+1 {
+		switch stageToCheck := int64(idx); {
+		case stageToCheck < progression.SrsStage+1:
 			optimalUnlocks[idx] = time.Time{}
-		} else if int64(idx) == progression.SrsStage+1 {
+		case stageToCheck == progression.SrsStage+1:
 			now := timeNow()
 
 			referenceTime := getReferenceTimeForAvailability(progression)
@@ -63,7 +63,7 @@ func computeOptimalUnlocks(system data.SpacedRepetitionSystem, progression Progr
 			} else {
 				optimalUnlocks[idx] = referenceTime
 			}
-		} else if int64(idx) > progression.SrsStage+1 {
+		case stageToCheck > progression.SrsStage+1:
 			lastUnlock := optimalUnlocks[idx-1]
 			intervalDuration := time.Duration(toIntOrPanic(stage.Interval))
 			var nextUnlock time.Time
@@ -81,20 +81,20 @@ func computeOptimalUnlocks(system data.SpacedRepetitionSystem, progression Progr
 			UnlockTimes: optimalUnlocks,
 			Unlocked:    false,
 		}
-	} else {
-		return Unlocks{
-			UnlockTimes: optimalUnlocks,
-			Unlocked:    true,
-		}
+	}
+	return Unlocks{
+		UnlockTimes: optimalUnlocks,
+		Unlocked:    true,
 	}
 }
 
 func getReferenceTimeForAvailability(progression Progression) time.Time {
-	if (progression.AvailableAt != time.Time{}) {
+	switch {
+	case progression.AvailableAt != time.Time{}:
 		return progression.AvailableAt
-	} else if (progression.PotentiallyAvailableAt != time.Time{}) {
+	case progression.PotentiallyAvailableAt != time.Time{}:
 		return progression.PotentiallyAvailableAt
-	} else {
+	default:
 		return time.Time{}
 	}
 }
@@ -108,7 +108,7 @@ func UpdateOptimalUnlockTimes(spacedRepetitionSystems map[string]data.SpacedRepe
 func updateLockedKanji(radicalProgressions *[]Progression, kanjiProgressions *[]Progression) {
 	kanjiProgressionMap := make(map[string]int)
 	for idx, kanjiProgression := range *kanjiProgressions {
-		kanjiProgressionMap[kanjiProgression.SubjectId] = idx
+		kanjiProgressionMap[kanjiProgression.SubjectID] = idx
 	}
 
 	for _, radicalProgression := range *radicalProgressions {

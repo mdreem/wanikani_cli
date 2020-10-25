@@ -8,7 +8,7 @@ import (
 )
 
 type Progression struct {
-	SubjectId  string
+	SubjectID  string
 	Characters string
 
 	SrsStage  int64
@@ -49,8 +49,8 @@ func fetchProgression(client data.Client, level string, subjectType string) []Pr
 
 	progressionList := make([]Progression, 0)
 	for _, assignment := range assignments {
-		relatedSubjectId := assignment.Data.SubjectId.String()
-		relatedSubject := subjects[relatedSubjectId]
+		relatedSubjectID := assignment.Data.SubjectID.String()
+		relatedSubject := subjects[relatedSubjectID]
 
 		passedAt := parseTime(assignment.Data.PassedAt)
 		unlockedAt := parseTime(assignment.Data.UnlockedAt)
@@ -62,7 +62,7 @@ func fetchProgression(client data.Client, level string, subjectType string) []Pr
 		}
 
 		progression := Progression{
-			SubjectId:               relatedSubjectId,
+			SubjectID:               relatedSubjectID,
 			Characters:              relatedSubject.Characters,
 			SrsStage:                srsStage,
 			SrsSystem:               relatedSubject.SrsSystem,
@@ -75,13 +75,13 @@ func fetchProgression(client data.Client, level string, subjectType string) []Pr
 		progressionList = append(progressionList, progression)
 
 		relatedSubject.HasAssigment = true
-		subjects[relatedSubjectId] = relatedSubject
+		subjects[relatedSubjectID] = relatedSubject
 	}
 
-	for subjectId, subject := range subjects {
+	for subjectID, subject := range subjects {
 		if !subject.HasAssigment {
 			progression := Progression{
-				SubjectId:               subjectId,
+				SubjectID:               subjectID,
 				Characters:              subject.Characters,
 				SrsStage:                0,
 				SrsSystem:               subject.SrsSystem,
@@ -111,9 +111,9 @@ func getSubjects(client data.Client, level string, subjectType string) map[strin
 	subjects := make(map[string]subjectForAssigment)
 
 	for _, subject := range subjectList {
-		subjects[subject.Id.String()] = subjectForAssigment{
+		subjects[subject.ID.String()] = subjectForAssigment{
 			Characters:             subject.Data.Characters,
-			SrsSystem:              subject.Data.SpacedRepetitionSystemId.String(),
+			SrsSystem:              subject.Data.SpacedRepetitionSystemID.String(),
 			AmalgamationSubjectIds: subject.Data.AmalgamationSubjectIds,
 			HasAssigment:           false,
 		}
