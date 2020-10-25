@@ -17,7 +17,7 @@ func main() {
 	case wanikani.LevelProgress:
 		wanikani.PrintLevelProgress()
 	case wanikani.UserInfo:
-		fmt.Println("Not implemented yet")
+		wanikani.PrintUserInfo()
 	}
 }
 
@@ -38,14 +38,12 @@ func parseArguments() wanikani.CommandInfo {
 		if err != nil {
 			panic(fmt.Errorf("error parsing paramerers for level_progress: %v", err))
 		}
-		fmt.Println("subcommand 'level_progress'")
 		command = wanikani.LevelProgress
 	case "user_info":
 		err := userInfo.Parse(os.Args[2:])
 		if err != nil {
 			panic(fmt.Errorf("error parsing paramerers for user_info: %v", err))
 		}
-		fmt.Println("subcommand 'userInfo'")
 		command = wanikani.UserInfo
 	default:
 		fmt.Println("expected a subcommand")
