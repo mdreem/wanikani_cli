@@ -16,7 +16,7 @@ func main() {
 
 	fmt.Printf("Fetching information for user '%s' at level %v\n", userInformation.Username, userInformation.Level)
 
-	progressions := wanikani.FetchProgressions(client, "29")
+	progressions := wanikani.FetchProgressions(client, userInformation.Level.String())
 
 	spacedRepetitionSystems := client.FetchSpacedRepetitionSystems()
 	spacedRepetitionSystemMap := data.CreateSpacedRepetitionSystemMap(spacedRepetitionSystems)
