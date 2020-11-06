@@ -13,6 +13,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
+    - name: Debug
+      run: |
+        cat ${GITHUB_EVENT_PATH}
+
     - name: Set up Go 1.x
       uses: actions/setup-go@v2
       with:
