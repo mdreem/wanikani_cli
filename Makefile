@@ -11,6 +11,6 @@ lint:
 	golangci-lint run --config=.github/linters/golangci.yml
 
 compile:
-	GOOS=darwin GOARCH=amd64 go build -o bin/wanikani_cli-darwin-amd64 main.go
-	GOOS=linux GOARCH=amd64 go build -o bin/wanikani_cli-linux-amd64 main.go
-	GOOS=windows GOARCH=amd64 go build -o bin/wanikani_cli-windows-amd64 main.go
+	GOOS=darwin GOARCH=amd64 go build -o bin/darwin-amd64/wanikani_cli main.go
+	GOOS=linux GOARCH=amd64 go build -o bin/linux-amd64/wanikani_cli main.go
+	GOOS=windows GOARCH=amd64 go build -o bin/windows-amd64/wanikani_cli main.go
