@@ -10,6 +10,9 @@ test:
 lint:
 	golangci-lint run --config=.github/linters/golangci.yml
 
+clean:
+	rm -r bin/**
+
 compile:
 	GOOS=darwin GOARCH=amd64 go build -o bin/darwin-amd64/wanikani_cli main.go
 	GOOS=linux GOARCH=amd64 go build -o bin/linux-amd64/wanikani_cli main.go
