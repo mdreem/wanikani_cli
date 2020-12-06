@@ -36,8 +36,6 @@ type AssignmentEnvelope struct {
 }
 
 func (o Client) FetchAssignments(levels []string, subjectTypes []string) []AssignmentEnvelope {
-	assignmentsEnvelope := AssignmentsEnvelope{}
-
 	parameters := make(map[string]string)
 
 	if levels != nil {
@@ -46,11 +44,25 @@ func (o Client) FetchAssignments(levels []string, subjectTypes []string) []Assig
 	if subjectTypes != nil {
 		parameters["subject_types"] = joinArrayToParameter(subjectTypes)
 	}
+	assignmentsEnvelope := AssignmentsEnvelope{}
 
-	err := o.FetchWanikaniData("assignments", &assignmentsEnvelope, parameters)
+	err := o.FetchWanikaniDataFromEndpoint("assignments", &assignmentsEnvelope, parameters)
 	if err != nil {
 		panic(fmt.Errorf("error fetching list of assignments: %v", err))
 	}
 
-	return assignmentsEnvelope.Data
+	var assignmentEnvelopeDataList = assignmentsEnvelope.Data
+	var nextUrl = assignmentsEnvelope.Pages.NextURL
+	for nextUrl != "" {
+		currentAssignmentsEnvelope := AssignmentsEnvelope{}
+
+		err := o.FetchWanikaniDataFromUrl(nextUrl, &currentAssignmentsEnvelope)
+		if err != nil {
+			panic(fmt.Errorf("error fetching list of assignments: %v", err))
+		}
+		nextUrl = currentAssignmentsEnvelope.Pages.NextURL
+		assignmentEnvelopeDataList = append(assignmentEnvelopeDataList, currentAssignmentsEnvelope.Data...)
+	}
+
+	return assignmentEnvelopeDataList
 }

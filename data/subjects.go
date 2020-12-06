@@ -74,7 +74,7 @@ func (o Client) FetchSubjects(ids []string, levels []string, types []string) []S
 		parameters["types"] = joinArrayToParameter(types)
 	}
 
-	err := o.FetchWanikaniData("subjects", &subjectEnvelope, parameters)
+	err := o.FetchWanikaniDataFromEndpoint("subjects", &subjectEnvelope, parameters)
 	if err != nil {
 		panic(fmt.Errorf("error fetching list of subjects: %v", err))
 	}

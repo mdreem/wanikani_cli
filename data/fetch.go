@@ -21,13 +21,37 @@ type Pages struct {
 	PreviousURL string      `json:"previous_url"`
 }
 
-func (o Client) FetchWanikaniData(endpoint string, data interface{}, parameters map[string]string) error {
+func (o Client) FetchWanikaniDataFromEndpoint(endpoint string, data interface{}, parameters map[string]string) error {
 	request, err := o.createRequest(endpoint, parameters)
 	if err != nil {
 		fmt.Printf("an error occurred when creating the request: %v\n", err)
 		return err
 	}
+	err = o.fetchWanikaniData(request, data)
+	if err != nil {
+		fmt.Printf("an error occurred when fetching data: %v\n", err)
+		return err
+	}
 
+	return nil
+}
+
+func (o Client) FetchWanikaniDataFromUrl(url string, data interface{}) error {
+	request, err := o.createAuthorizedRequest(url)
+	if err != nil {
+		fmt.Printf("an error occurred when creating the request: %v\n", err)
+		return err
+	}
+	err = o.fetchWanikaniData(request, data)
+	if err != nil {
+		fmt.Printf("an error occurred when fetching data: %v\n", err)
+		return err
+	}
+
+	return nil
+}
+
+func (o Client) fetchWanikaniData(request *http.Request, data interface{}) error {
 	response, err := o.Client.Do(request)
 	if err != nil {
 		fmt.Printf("an error occurred when executing the request: %v\n", err)
@@ -44,17 +68,24 @@ func (o Client) FetchWanikaniData(endpoint string, data interface{}, parameters 
 		fmt.Printf("an error occurred while converting the response: %v\n", err)
 		return err
 	}
-
 	return nil
 }
 
-func (o Client) createRequest(endpoint string, parameters map[string]string) (*http.Request, error) {
-	request, err := http.NewRequest("GET", o.BaseURL+endpoint, nil)
+func (o Client) createAuthorizedRequest(url string) (*http.Request, error) {
+	request, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, err
 	}
 
 	request.Header.Add("Authorization", "Bearer "+o.APIKey)
+	return request, nil
+}
+
+func (o Client) createRequest(endpoint string, parameters map[string]string) (*http.Request, error) {
+	request, err := o.createAuthorizedRequest(o.BaseURL + endpoint)
+	if err != nil {
+		return nil, err
+	}
 
 	if parameters != nil {
 		q := request.URL.Query()
