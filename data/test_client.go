@@ -1,3 +1,5 @@
+// +build mock
+
 package data
 
 import "net/http"
@@ -44,4 +46,8 @@ func (testClient TestClient) FetchSubjects(ids []string, levels []string, types 
 
 func (testClient TestClient) FetchUserInformation() User {
 	return User{}
+}
+
+func CreateTestClient() {
+
 }
