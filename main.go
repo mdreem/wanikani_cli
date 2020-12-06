@@ -26,6 +26,13 @@ func main() {
 func parseArguments() wanikani.CommandInfo {
 	if len(os.Args) < 2 {
 		fmt.Println("expected a subcommand")
+		fmt.Println("")
+		fmt.Println("possible subcommands:")
+		fmt.Println("")
+		fmt.Println("level_progress    Prints progress of the current level")
+		fmt.Println("user_info         Fetches user data")
+		fmt.Println("progress_info     Computes overall progress")
+
 		os.Exit(1)
 	}
 
