@@ -39,9 +39,9 @@ type UserEnvelope struct {
 	Data           User   `json:"data"`
 }
 
-func (o Client) FetchUserInformation() User {
+func (o WanikaniClient) FetchUserInformation() User {
 	userEnvelope := UserEnvelope{}
-	err := o.FetchWanikaniData("user", &userEnvelope, nil)
+	err := o.FetchWanikaniDataFromEndpoint("user", &userEnvelope, nil)
 	if err != nil {
 		panic(fmt.Errorf("error fetching user data: %v", err))
 	}

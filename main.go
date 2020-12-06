@@ -18,12 +18,21 @@ func main() {
 		wanikani.PrintLevelProgress()
 	case wanikani.UserInfo:
 		wanikani.PrintUserInfo()
+	case wanikani.ProgressInfo:
+		wanikani.PrintProgressInfo()
 	}
 }
 
 func parseArguments() wanikani.CommandInfo {
 	if len(os.Args) < 2 {
 		fmt.Println("expected a subcommand")
+		fmt.Println("")
+		fmt.Println("possible subcommands:")
+		fmt.Println("")
+		fmt.Println("level_progress    Prints progress of the current level")
+		fmt.Println("user_info         Fetches user data")
+		fmt.Println("progress_info     Computes overall progress")
+
 		os.Exit(1)
 	}
 
@@ -45,6 +54,12 @@ func parseArguments() wanikani.CommandInfo {
 			panic(fmt.Errorf("error parsing paramerers for user_info: %v", err))
 		}
 		command = wanikani.UserInfo
+	case "progress_info":
+		err := userInfo.Parse(os.Args[2:])
+		if err != nil {
+			panic(fmt.Errorf("error parsing paramerers for progress_info: %v", err))
+		}
+		command = wanikani.ProgressInfo
 	default:
 		fmt.Println("expected a subcommand")
 		os.Exit(1)

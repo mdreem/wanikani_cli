@@ -42,10 +42,10 @@ type SpacedRepetitionSystemEnvelope struct {
 	Data           SpacedRepetitionSystem `json:"data"`
 }
 
-func (o Client) FetchSpacedRepetitionSystems() []SpacedRepetitionSystemEnvelope {
+func (o WanikaniClient) FetchSpacedRepetitionSystems() []SpacedRepetitionSystemEnvelope {
 	spacedRepetitionSystemsEnvelope := SpacedRepetitionSystemsEnvelope{}
 
-	err := o.FetchWanikaniData("spaced_repetition_systems", &spacedRepetitionSystemsEnvelope, nil)
+	err := o.FetchWanikaniDataFromEndpoint("spaced_repetition_systems", &spacedRepetitionSystemsEnvelope, nil)
 	if err != nil {
 		panic(fmt.Errorf("error fetching list of spaced repetition systems: %v", err))
 	}
