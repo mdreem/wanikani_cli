@@ -18,7 +18,7 @@ type WanikaniClient struct {
 type Client interface {
 	FetchAssignments(levels []string, subjectTypes []string) []AssignmentEnvelope
 	FetchWanikaniDataFromEndpoint(endpoint string, data interface{}, parameters map[string]string) error
-	FetchWanikaniDataFromUrl(url string, data interface{}) error
+	FetchWanikaniDataFromURL(url string, data interface{}) error
 	fetchWanikaniData(request *http.Request, data interface{}) error
 	createAuthorizedRequest(url string) (*http.Request, error)
 	createRequest(endpoint string, parameters map[string]string) (*http.Request, error)
@@ -49,7 +49,7 @@ func (o WanikaniClient) FetchWanikaniDataFromEndpoint(endpoint string, data inte
 	return nil
 }
 
-func (o WanikaniClient) FetchWanikaniDataFromUrl(url string, data interface{}) error {
+func (o WanikaniClient) FetchWanikaniDataFromURL(url string, data interface{}) error {
 	request, err := o.createAuthorizedRequest(url)
 	if err != nil {
 		fmt.Printf("an error occurred when creating the request: %v\n", err)

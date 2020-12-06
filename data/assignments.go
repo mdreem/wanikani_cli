@@ -52,15 +52,15 @@ func (o WanikaniClient) FetchAssignments(levels []string, subjectTypes []string)
 	}
 
 	var assignmentEnvelopeDataList = assignmentsEnvelope.Data
-	var nextUrl = assignmentsEnvelope.Pages.NextURL
-	for nextUrl != "" {
+	var nextURL = assignmentsEnvelope.Pages.NextURL
+	for nextURL != "" {
 		currentAssignmentsEnvelope := AssignmentsEnvelope{}
 
-		err := o.FetchWanikaniDataFromUrl(nextUrl, &currentAssignmentsEnvelope)
+		err := o.FetchWanikaniDataFromURL(nextURL, &currentAssignmentsEnvelope)
 		if err != nil {
 			panic(fmt.Errorf("error fetching list of assignments: %v", err))
 		}
-		nextUrl = currentAssignmentsEnvelope.Pages.NextURL
+		nextURL = currentAssignmentsEnvelope.Pages.NextURL
 		assignmentEnvelopeDataList = append(assignmentEnvelopeDataList, currentAssignmentsEnvelope.Data...)
 	}
 

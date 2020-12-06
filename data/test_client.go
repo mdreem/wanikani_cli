@@ -16,7 +16,7 @@ func (testClient TestClient) FetchWanikaniDataFromEndpoint(endpoint string, data
 	return nil
 }
 
-func (testClient TestClient) FetchWanikaniDataFromUrl(url string, data interface{}) error {
+func (testClient TestClient) FetchWanikaniDataFromURL(url string, data interface{}) error {
 	return nil
 }
 

@@ -8,7 +8,6 @@ import (
 )
 
 func Test_fetchDistribution(t *testing.T) {
-
 	tests := []struct {
 		name        string
 		subjectType string
@@ -60,7 +59,6 @@ func createAssignment(srsLevel json.Number) data.AssignmentEnvelope {
 }
 
 func Test_ComputeProgressInfo(t *testing.T) {
-
 	tests := []struct {
 		name        string
 		subjectType string

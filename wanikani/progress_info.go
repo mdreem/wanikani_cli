@@ -49,7 +49,7 @@ func fetchDistribution(client data.Client, subjectType string) []int {
 		if err != nil {
 			panic(fmt.Errorf("could not convert '%v' to int: %v", assignment.Data.SrsStage, err))
 		}
-		srsDistribution[srsStage] += 1
+		srsDistribution[srsStage]++
 	}
 	return srsDistribution
 }

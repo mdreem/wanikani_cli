@@ -22,3 +22,6 @@ linters:
     - varcheck
     - whitespace
     - unused
+run:
+  build-tags:
+    - mock
