@@ -59,7 +59,7 @@ type SubjectEnvelope struct {
 	Data           Subject     `json:"data"`
 }
 
-func (o Client) FetchSubjects(ids []string, levels []string, types []string) []SubjectEnvelope {
+func (o WanikaniClient) FetchSubjects(ids []string, levels []string, types []string) []SubjectEnvelope {
 	subjectEnvelope := SubjectsEnvelope{}
 
 	parameters := make(map[string]string)

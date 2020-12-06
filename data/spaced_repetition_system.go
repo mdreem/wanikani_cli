@@ -42,7 +42,7 @@ type SpacedRepetitionSystemEnvelope struct {
 	Data           SpacedRepetitionSystem `json:"data"`
 }
 
-func (o Client) FetchSpacedRepetitionSystems() []SpacedRepetitionSystemEnvelope {
+func (o WanikaniClient) FetchSpacedRepetitionSystems() []SpacedRepetitionSystemEnvelope {
 	spacedRepetitionSystemsEnvelope := SpacedRepetitionSystemsEnvelope{}
 
 	err := o.FetchWanikaniDataFromEndpoint("spaced_repetition_systems", &spacedRepetitionSystemsEnvelope, nil)

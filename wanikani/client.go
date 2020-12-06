@@ -16,7 +16,7 @@ func GetAPIKey() string {
 	return apiKey
 }
 
-func CreateClient() data.Client {
+func CreateClient() data.WanikaniClient {
 	apiKey := GetAPIKey()
-	return data.Client{BaseURL: "https://api.wanikani.com/v2/", APIKey: apiKey, Client: &http.Client{}}
+	return data.WanikaniClient{BaseURL: "https://api.wanikani.com/v2/", APIKey: apiKey, Client: &http.Client{}}
 }

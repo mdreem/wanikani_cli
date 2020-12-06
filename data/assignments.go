@@ -35,7 +35,7 @@ type AssignmentEnvelope struct {
 	Data           Assignment  `json:"data"`
 }
 
-func (o Client) FetchAssignments(levels []string, subjectTypes []string) []AssignmentEnvelope {
+func (o WanikaniClient) FetchAssignments(levels []string, subjectTypes []string) []AssignmentEnvelope {
 	parameters := make(map[string]string)
 
 	if levels != nil {

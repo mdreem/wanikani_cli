@@ -16,7 +16,7 @@ type ProgressionData struct {
 	NumBurned      int
 }
 
-func ComputeProgressInfo(client data.Client, subjectType string) ProgressionData {
+func ComputeProgressInfo(client data.WanikaniClient, subjectType string) ProgressionData {
 	srsDistribution := fetchDistribution(client, subjectType)
 	accumulatedDistribution := make([]int, NumSrsLevels)
 	progressionData := computeProgressionData(srsDistribution, accumulatedDistribution)
