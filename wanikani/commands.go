@@ -11,6 +11,7 @@ type Command int
 const (
 	LevelProgress Command = iota
 	UserInfo
+	ProgressInfo
 )
 
 type CommandInfo struct {
@@ -51,4 +52,29 @@ func PrintUserInfo() {
 	fmt.Printf("\tMax level granted: %s\n", userInformation.Subscription.MaxLevelGranted.String())
 	fmt.Printf("\tPeriod ends at: %s\n", userInformation.Subscription.PeriodEndsAt)
 	fmt.Printf("\tSubscription type: %s\n", userInformation.Subscription.Type)
+}
+
+func PrintProgressInfo() {
+	client := CreateClient()
+
+	radicalProgressInfo := ComputeProgressInfo(client, "radical")
+	kanjiProgressInfo := ComputeProgressInfo(client, "kanji")
+	vocabularyProgressInfo := ComputeProgressInfo(client, "vocabulary")
+
+	fmt.Printf("Radical Progress:\n")
+	printSrsLevelProgress(radicalProgressInfo)
+
+	fmt.Printf("\nKanji Progress:\n")
+	printSrsLevelProgress(kanjiProgressInfo)
+
+	fmt.Printf("\nVocabulary Progress:\n")
+	printSrsLevelProgress(vocabularyProgressInfo)
+}
+
+func printSrsLevelProgress(progressionData ProgressionData) {
+	fmt.Printf("\tApprentice+:  %d\n", progressionData.NumApprentice)
+	fmt.Printf("\tGuru+:        %d\n", progressionData.NumGuru)
+	fmt.Printf("\tMaster+:      %d\n", progressionData.NumMaster)
+	fmt.Printf("\tEnlightened+: %d\n", progressionData.NumEnlightened)
+	fmt.Printf("\tBurned:       %d\n", progressionData.NumBurned)
 }
