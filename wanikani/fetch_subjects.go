@@ -5,7 +5,7 @@ import (
 	"github.com/mdreem/wanikani_cli/wanikani/data"
 )
 
-func (o WanikaniClient) FetchSubjects(ids []string, levels []string, types []string) []data.SubjectEnvelope {
+func (o RealClient) FetchSubjects(ids []string, levels []string, types []string) []data.SubjectEnvelope {
 	subjectEnvelope := data.SubjectsEnvelope{}
 
 	parameters := make(map[string]string)

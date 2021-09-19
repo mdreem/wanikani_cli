@@ -5,7 +5,7 @@ import (
 	"github.com/mdreem/wanikani_cli/wanikani/data"
 )
 
-func (o WanikaniClient) FetchAssignments(levels []string, subjectTypes []string) []data.AssignmentEnvelope {
+func (o RealClient) FetchAssignments(levels []string, subjectTypes []string) []data.AssignmentEnvelope {
 	parameters := make(map[string]string)
 
 	if levels != nil {

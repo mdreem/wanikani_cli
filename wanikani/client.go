@@ -16,12 +16,12 @@ func GetAPIKey() string {
 	return apiKey
 }
 
-func CreateClient() WanikaniClient {
+func CreateClient() RealClient {
 	apiKey := GetAPIKey()
-	return WanikaniClient{BaseURL: "https://api.wanikani.com/v2/", APIKey: apiKey, Client: &http.Client{}}
+	return RealClient{BaseURL: "https://api.wanikani.com/v2/", APIKey: apiKey, Client: &http.Client{}}
 }
 
-type WanikaniClient struct {
+type RealClient struct {
 	BaseURL string
 	APIKey  string
 	Client  *http.Client

@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func PrintLevelProgress(client wanikani.WanikaniClient, _ *cobra.Command, _ []string) {
+func PrintLevelProgress(client wanikani.RealClient, _ *cobra.Command, _ []string) {
 	userInformation := client.FetchUserInformation()
 
 	fmt.Printf("Fetching information for user '%s' at level %v\n", userInformation.Username, userInformation.Level)

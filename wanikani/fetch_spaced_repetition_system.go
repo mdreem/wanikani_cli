@@ -7,7 +7,7 @@ import (
 	"sort"
 )
 
-func (o WanikaniClient) FetchSpacedRepetitionSystems() []data.SpacedRepetitionSystemEnvelope {
+func (o RealClient) FetchSpacedRepetitionSystems() []data.SpacedRepetitionSystemEnvelope {
 	spacedRepetitionSystemsEnvelope := data.SpacedRepetitionSystemsEnvelope{}
 
 	err := o.FetchWanikaniDataFromEndpoint("spaced_repetition_systems", &spacedRepetitionSystemsEnvelope, nil)
