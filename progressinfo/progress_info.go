@@ -17,9 +17,7 @@ type ProgressionData struct {
 	NumBurned      int
 }
 
-func PrintProgressInfo(_ *cobra.Command, _ []string) {
-	client := wanikani.CreateClient()
-
+func PrintProgressInfo(client wanikani.WanikaniClient, _ *cobra.Command, _ []string) {
 	radicalProgressInfo := ComputeProgressInfo(client, "radical")
 	kanjiProgressInfo := ComputeProgressInfo(client, "kanji")
 	vocabularyProgressInfo := ComputeProgressInfo(client, "vocabulary")

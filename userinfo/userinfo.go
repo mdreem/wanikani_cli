@@ -6,8 +6,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func PrintUserInfo(_ *cobra.Command, _ []string) {
-	client := wanikani.CreateClient()
+func PrintUserInfo(client wanikani.WanikaniClient, _ *cobra.Command, _ []string) {
 	userInformation := client.FetchUserInformation()
 
 	fmt.Printf("Username: %s\n", userInformation.Username)
