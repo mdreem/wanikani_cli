@@ -3,7 +3,6 @@ package level_progress
 import (
 	"fmt"
 	"github.com/mdreem/wanikani_cli/wanikani"
-	"github.com/mdreem/wanikani_cli/wanikani/data"
 	"github.com/spf13/cobra"
 	"time"
 )
@@ -17,7 +16,7 @@ func PrintLevelProgress(_ *cobra.Command, _ []string) {
 	progressions := FetchProgressions(client, userInformation.Level.String())
 
 	spacedRepetitionSystems := client.FetchSpacedRepetitionSystems()
-	spacedRepetitionSystemMap := data.CreateSpacedRepetitionSystemMap(spacedRepetitionSystems)
+	spacedRepetitionSystemMap := wanikani.CreateSpacedRepetitionSystemMap(spacedRepetitionSystems)
 
 	UpdateOptimalUnlockTimes(spacedRepetitionSystemMap, &progressions)
 

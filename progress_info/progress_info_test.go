@@ -2,6 +2,7 @@ package progress_info
 
 import (
 	"encoding/json"
+	"github.com/mdreem/wanikani_cli/wanikani"
 	data2 "github.com/mdreem/wanikani_cli/wanikani/data"
 	"reflect"
 	"testing"
@@ -39,7 +40,7 @@ func Test_fetchDistribution(t *testing.T) {
 			for _, srsLevel := range tt.srsLevels {
 				assignments = append(assignments, createAssignment(srsLevel))
 			}
-			testClient := data2.TestClient{
+			testClient := wanikani.TestClient{
 				Assignments: assignments,
 			}
 
@@ -111,7 +112,7 @@ func Test_ComputeProgressInfo(t *testing.T) {
 			for _, srsLevel := range tt.srsLevels {
 				assignments = append(assignments, createAssignment(srsLevel))
 			}
-			testClient := data2.TestClient{
+			testClient := wanikani.TestClient{
 				Assignments: assignments,
 			}
 

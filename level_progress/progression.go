@@ -3,7 +3,7 @@ package level_progress
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/mdreem/wanikani_cli/wanikani/data"
+	"github.com/mdreem/wanikani_cli/wanikani"
 	"time"
 )
 
@@ -34,14 +34,14 @@ func (progression Progression) isUnlocked() bool {
 	return progression.UnlockedAt != time.Time{}
 }
 
-func FetchProgressions(client data.WanikaniClient, level string) Progressions {
+func FetchProgressions(client wanikani.WanikaniClient, level string) Progressions {
 	return Progressions{
 		RadicalProgression: fetchProgression(client, level, "radical"),
 		KanjiProgression:   fetchProgression(client, level, "kanji"),
 	}
 }
 
-func fetchProgression(client data.WanikaniClient, level string, subjectType string) []Progression {
+func fetchProgression(client wanikani.WanikaniClient, level string, subjectType string) []Progression {
 	assignments := client.FetchAssignments([]string{level}, []string{subjectType})
 	subjects := getSubjects(client, level, subjectType)
 
@@ -103,7 +103,7 @@ type subjectForAssigment struct {
 	HasAssigment           bool
 }
 
-func getSubjects(client data.WanikaniClient, level string, subjectType string) map[string]subjectForAssigment {
+func getSubjects(client wanikani.WanikaniClient, level string, subjectType string) map[string]subjectForAssigment {
 	subjectList := client.FetchSubjects(nil, []string{level}, []string{subjectType})
 
 	subjects := make(map[string]subjectForAssigment)

@@ -3,7 +3,6 @@ package progress_info
 import (
 	"fmt"
 	"github.com/mdreem/wanikani_cli/wanikani"
-	"github.com/mdreem/wanikani_cli/wanikani/data"
 	"github.com/spf13/cobra"
 )
 
@@ -43,7 +42,7 @@ func printSrsLevelProgress(progressionData ProgressionData) {
 	fmt.Printf("\tBurned:       %d\n", progressionData.NumBurned)
 }
 
-func ComputeProgressInfo(client data.Client, subjectType string) ProgressionData {
+func ComputeProgressInfo(client wanikani.Client, subjectType string) ProgressionData {
 	srsDistribution := fetchDistribution(client, subjectType)
 	accumulatedDistribution := make([]int, NumSrsLevels)
 	progressionData := computeProgressionData(srsDistribution, accumulatedDistribution)
@@ -68,7 +67,7 @@ func computeProgressionData(kanjiSrsDistribution []int, accumulatedDistribution 
 	return progressionData
 }
 
-func fetchDistribution(client data.Client, subjectType string) []int {
+func fetchDistribution(client wanikani.Client, subjectType string) []int {
 	assignments := client.FetchAssignments(nil, []string{subjectType})
 	srsDistribution := make([]int, NumSrsLevels)
 	for _, assignment := range assignments {

@@ -1,4 +1,4 @@
-package data
+package wanikani
 
 import (
 	"encoding/json"
@@ -8,31 +8,6 @@ import (
 	"net/http"
 	"strings"
 )
-
-type WanikaniClient struct {
-	BaseURL string
-	APIKey  string
-	Client  *http.Client
-}
-
-type Client interface {
-	FetchAssignments(levels []string, subjectTypes []string) []AssignmentEnvelope
-	FetchWanikaniDataFromEndpoint(endpoint string, data interface{}, parameters map[string]string) error
-	FetchWanikaniDataFromURL(url string, data interface{}) error
-	fetchWanikaniData(request *http.Request, data interface{}) error
-	createAuthorizedRequest(url string) (*http.Request, error)
-	createRequest(endpoint string, parameters map[string]string) (*http.Request, error)
-	convertResponse(response *http.Response, data interface{}) error
-	FetchSpacedRepetitionSystems() []SpacedRepetitionSystemEnvelope
-	FetchSubjects(ids []string, levels []string, types []string) []SubjectEnvelope
-	FetchUserInformation() User
-}
-
-type Pages struct {
-	PerPage     json.Number `json:"per_page"`
-	NextURL     string      `json:"next_url"`
-	PreviousURL string      `json:"previous_url"`
-}
 
 func (o WanikaniClient) FetchWanikaniDataFromEndpoint(endpoint string, data interface{}, parameters map[string]string) error {
 	request, err := o.createRequest(endpoint, parameters)

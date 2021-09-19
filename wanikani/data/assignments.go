@@ -2,7 +2,6 @@ package data
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 type Assignment struct {
@@ -33,36 +32,4 @@ type AssignmentEnvelope struct {
 	URL            string      `json:"url"`
 	DataUploadedAt string      `json:"data_updated_at"`
 	Data           Assignment  `json:"data"`
-}
-
-func (o WanikaniClient) FetchAssignments(levels []string, subjectTypes []string) []AssignmentEnvelope {
-	parameters := make(map[string]string)
-
-	if levels != nil {
-		parameters["levels"] = joinArrayToParameter(levels)
-	}
-	if subjectTypes != nil {
-		parameters["subject_types"] = joinArrayToParameter(subjectTypes)
-	}
-	assignmentsEnvelope := AssignmentsEnvelope{}
-
-	err := o.FetchWanikaniDataFromEndpoint("assignments", &assignmentsEnvelope, parameters)
-	if err != nil {
-		panic(fmt.Errorf("error fetching list of assignments: %v", err))
-	}
-
-	var assignmentEnvelopeDataList = assignmentsEnvelope.Data
-	var nextURL = assignmentsEnvelope.Pages.NextURL
-	for nextURL != "" {
-		currentAssignmentsEnvelope := AssignmentsEnvelope{}
-
-		err := o.FetchWanikaniDataFromURL(nextURL, &currentAssignmentsEnvelope)
-		if err != nil {
-			panic(fmt.Errorf("error fetching list of assignments: %v", err))
-		}
-		nextURL = currentAssignmentsEnvelope.Pages.NextURL
-		assignmentEnvelopeDataList = append(assignmentEnvelopeDataList, currentAssignmentsEnvelope.Data...)
-	}
-
-	return assignmentEnvelopeDataList
 }
