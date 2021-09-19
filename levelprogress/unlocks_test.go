@@ -1,4 +1,4 @@
-package level_progress
+package levelprogress
 
 import (
 	"encoding/json"

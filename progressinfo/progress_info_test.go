@@ -1,4 +1,4 @@
-package progress_info
+package progressinfo
 
 import (
 	"encoding/json"
