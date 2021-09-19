@@ -2,8 +2,8 @@ package level_progress
 
 import (
 	"fmt"
-	"github.com/mdreem/wanikani_cli/data"
 	"github.com/mdreem/wanikani_cli/wanikani"
+	"github.com/mdreem/wanikani_cli/wanikani/data"
 	"github.com/spf13/cobra"
 	"time"
 )

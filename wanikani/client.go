@@ -2,7 +2,7 @@ package wanikani
 
 import (
 	"fmt"
-	"github.com/mdreem/wanikani_cli/data"
+	"github.com/mdreem/wanikani_cli/wanikani/data"
 	"github.com/spf13/viper"
 	"net/http"
 )

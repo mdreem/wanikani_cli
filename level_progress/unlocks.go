@@ -3,7 +3,7 @@ package level_progress
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/mdreem/wanikani_cli/data"
+	"github.com/mdreem/wanikani_cli/wanikani/data"
 	"math"
 	"sort"
 	"strings"
