@@ -1,14 +1,18 @@
+//go:build mock
 // +build mock
 
-package data
+package wanikani
 
-import "net/http"
+import (
+	"github.com/mdreem/wanikani_cli/wanikani/data"
+	"net/http"
+)
 
 type TestClient struct {
-	Assignments []AssignmentEnvelope
+	Assignments []data.AssignmentEnvelope
 }
 
-func (testClient TestClient) FetchAssignments(levels []string, subjectTypes []string) []AssignmentEnvelope {
+func (testClient TestClient) FetchAssignments(levels []string, subjectTypes []string) []data.AssignmentEnvelope {
 	return testClient.Assignments
 }
 
@@ -36,16 +40,16 @@ func (testClient TestClient) convertResponse(response *http.Response, data inter
 	return nil
 }
 
-func (testClient TestClient) FetchSpacedRepetitionSystems() []SpacedRepetitionSystemEnvelope {
+func (testClient TestClient) FetchSpacedRepetitionSystems() []data.SpacedRepetitionSystemEnvelope {
 	return nil
 }
 
-func (testClient TestClient) FetchSubjects(ids []string, levels []string, types []string) []SubjectEnvelope {
+func (testClient TestClient) FetchSubjects(ids []string, levels []string, types []string) []data.SubjectEnvelope {
 	return nil
 }
 
-func (testClient TestClient) FetchUserInformation() User {
-	return User{}
+func (testClient TestClient) FetchUserInformation() data.User {
+	return data.User{}
 }
 
 func CreateTestClient() {

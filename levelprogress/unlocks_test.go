@@ -1,8 +1,8 @@
-package wanikani
+package levelprogress
 
 import (
 	"encoding/json"
-	"github.com/mdreem/wanikani_cli/data"
+	"github.com/mdreem/wanikani_cli/wanikani/data"
 	"reflect"
 	"testing"
 	"time"

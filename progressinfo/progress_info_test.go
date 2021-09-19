@@ -1,8 +1,9 @@
-package wanikani
+package progressinfo
 
 import (
 	"encoding/json"
-	"github.com/mdreem/wanikani_cli/data"
+	"github.com/mdreem/wanikani_cli/wanikani"
+	data2 "github.com/mdreem/wanikani_cli/wanikani/data"
 	"reflect"
 	"testing"
 )
@@ -35,11 +36,11 @@ func Test_fetchDistribution(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			var assignments []data.AssignmentEnvelope
+			var assignments []data2.AssignmentEnvelope
 			for _, srsLevel := range tt.srsLevels {
 				assignments = append(assignments, createAssignment(srsLevel))
 			}
-			testClient := data.TestClient{
+			testClient := wanikani.TestClient{
 				Assignments: assignments,
 			}
 
@@ -50,9 +51,9 @@ func Test_fetchDistribution(t *testing.T) {
 	}
 }
 
-func createAssignment(srsLevel json.Number) data.AssignmentEnvelope {
-	return data.AssignmentEnvelope{
-		Data: data.Assignment{
+func createAssignment(srsLevel json.Number) data2.AssignmentEnvelope {
+	return data2.AssignmentEnvelope{
+		Data: data2.Assignment{
 			SrsStage: srsLevel,
 		},
 	}
@@ -107,11 +108,11 @@ func Test_ComputeProgressInfo(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			var assignments []data.AssignmentEnvelope
+			var assignments []data2.AssignmentEnvelope
 			for _, srsLevel := range tt.srsLevels {
 				assignments = append(assignments, createAssignment(srsLevel))
 			}
-			testClient := data.TestClient{
+			testClient := wanikani.TestClient{
 				Assignments: assignments,
 			}
 

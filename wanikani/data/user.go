@@ -2,7 +2,6 @@ package data
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 type User struct {
@@ -37,13 +36,4 @@ type UserEnvelope struct {
 	URL            string `json:"url"`
 	DataUploadedAt string `json:"data_updated_at"`
 	Data           User   `json:"data"`
-}
-
-func (o WanikaniClient) FetchUserInformation() User {
-	userEnvelope := UserEnvelope{}
-	err := o.FetchWanikaniDataFromEndpoint("user", &userEnvelope, nil)
-	if err != nil {
-		panic(fmt.Errorf("error fetching user data: %v", err))
-	}
-	return userEnvelope.Data
 }

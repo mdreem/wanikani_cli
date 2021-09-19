@@ -1,4 +1,4 @@
-package wanikani
+package levelprogress
 
 import (
 	"fmt"

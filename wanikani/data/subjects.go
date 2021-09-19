@@ -2,7 +2,6 @@ package data
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 type Meaning struct {
@@ -57,27 +56,4 @@ type SubjectEnvelope struct {
 	URL            string      `json:"url"`
 	DataUploadedAt string      `json:"data_updated_at"`
 	Data           Subject     `json:"data"`
-}
-
-func (o WanikaniClient) FetchSubjects(ids []string, levels []string, types []string) []SubjectEnvelope {
-	subjectEnvelope := SubjectsEnvelope{}
-
-	parameters := make(map[string]string)
-
-	if ids != nil {
-		parameters["ids"] = joinArrayToParameter(ids)
-	}
-	if levels != nil {
-		parameters["levels"] = joinArrayToParameter(levels)
-	}
-	if types != nil {
-		parameters["types"] = joinArrayToParameter(types)
-	}
-
-	err := o.FetchWanikaniDataFromEndpoint("subjects", &subjectEnvelope, parameters)
-	if err != nil {
-		panic(fmt.Errorf("error fetching list of subjects: %v", err))
-	}
-
-	return subjectEnvelope.Data
 }
