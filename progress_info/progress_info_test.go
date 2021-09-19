@@ -1,4 +1,4 @@
-package wanikani
+package progress_info
 
 import (
 	"encoding/json"

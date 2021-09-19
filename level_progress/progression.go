@@ -1,4 +1,4 @@
-package wanikani
+package level_progress
 
 import (
 	"encoding/json"

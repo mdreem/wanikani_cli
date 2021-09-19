@@ -1,8 +1,10 @@
-package wanikani
+package progress_info
 
 import (
 	"fmt"
 	"github.com/mdreem/wanikani_cli/data"
+	"github.com/mdreem/wanikani_cli/wanikani"
+	"github.com/spf13/cobra"
 )
 
 const NumSrsLevels = 10
@@ -14,6 +16,31 @@ type ProgressionData struct {
 	NumMaster      int
 	NumEnlightened int
 	NumBurned      int
+}
+
+func PrintProgressInfo(_ *cobra.Command, _ []string) {
+	client := wanikani.CreateClient()
+
+	radicalProgressInfo := ComputeProgressInfo(client, "radical")
+	kanjiProgressInfo := ComputeProgressInfo(client, "kanji")
+	vocabularyProgressInfo := ComputeProgressInfo(client, "vocabulary")
+
+	fmt.Printf("Radical Progress:\n")
+	printSrsLevelProgress(radicalProgressInfo)
+
+	fmt.Printf("\nKanji Progress:\n")
+	printSrsLevelProgress(kanjiProgressInfo)
+
+	fmt.Printf("\nVocabulary Progress:\n")
+	printSrsLevelProgress(vocabularyProgressInfo)
+}
+
+func printSrsLevelProgress(progressionData ProgressionData) {
+	fmt.Printf("\tApprentice+:  %d\n", progressionData.NumApprentice)
+	fmt.Printf("\tGuru+:        %d\n", progressionData.NumGuru)
+	fmt.Printf("\tMaster+:      %d\n", progressionData.NumMaster)
+	fmt.Printf("\tEnlightened+: %d\n", progressionData.NumEnlightened)
+	fmt.Printf("\tBurned:       %d\n", progressionData.NumBurned)
 }
 
 func ComputeProgressInfo(client data.Client, subjectType string) ProgressionData {
